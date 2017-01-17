@@ -1,63 +1,54 @@
 package ui.editor;
 
+import lombok.Getter;
+import ui.Theme;
+
+import javax.annotation.Generated;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
 import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
+import static ui.Theme.theme;
 
 /**
  * A NodeUI is a UI component that holds a node.
  */
 public class NodeUI extends JPanel {
 
-    public static final Color BORDER_COLOR = new Color(0x333537);
-
-    public static final Color SPECULAR_COLOR = new Color(0x4C4F52);
-
-    public static final Color BACKGROUND_COLOR = new Color(0x424548);
-
-    public static final Color SLOT_BORDER = new Color(0x333637);
-
-    public static final Color SLOT_COLOR = new Color(0x5E6266);
-
-    public static final int SLOT_SIZE = 13;
-
-    public static final int SLOT_BORDER_WIDTH = 3;
+    @Getter
+    protected final List<Slot> slots = new ArrayList<>();
 
     public NodeUI() {
-//        setBorder(BorderFactory.createLineBorder(UIManager.getColor("Label.foreground")));
-//        setLayout(new BorderLayout());
         add(new Header(), BorderLayout.NORTH);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
+        int slotSize = theme().getSlotSize();
+
+        int inset = slotSize / 2;
+
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        g2d.setColor(BORDER_COLOR);
-        g2d.fillRoundRect(0, 0, getWidth() - SLOT_SIZE / 2, getHeight(), 4, 4);
+        g2d.setColor(theme().getNodeBorderColor());
+        g2d.fillRoundRect(inset, inset, getWidth() - 2 * inset, getHeight() - 2 * inset, 4, 4);
 
-        g2d.setColor(SPECULAR_COLOR);
-        g2d.fillRoundRect(2, 2, getWidth() - SLOT_SIZE / 2 - 4, getHeight() - 4, 4, 4);
+        g2d.setColor(theme().getNodeSpecularColor());
+        g2d.fillRoundRect(inset + 2, inset + 2, getWidth() - 2 * inset - 4, getHeight() - 2 * inset - 4, 4, 4);
 
-        g2d.setColor(BACKGROUND_COLOR);
-        g2d.fillRoundRect(2, 3, getWidth() - SLOT_SIZE / 2 - 4, getHeight() - 5, 4, 4);
+        g2d.setColor(theme().getNodeBackgroundColor());
+        g2d.fillRoundRect(inset + 2, inset + 3, getWidth() - 2 * inset - 4, getHeight() - 2 * inset - 5, 4, 4);
 
         Font font = (Font) UIManager.getDefaults().get("Font.OpenSans-ExtraBold");
 
         g2d.setColor(new Color(0x738495));
-        g2d.setFont(font.deriveFont(13.0f));
-        g2d.drawString("Reply Choice", 10, 18);
-
-        g2d.setColor(SLOT_BORDER);
-        g2d.fillOval(getWidth() - SLOT_SIZE, 20, SLOT_SIZE, SLOT_SIZE);
-
-        g2d.setColor(SLOT_COLOR);
-        g2d.fillOval(getWidth() - SLOT_SIZE + SLOT_BORDER_WIDTH, 20 + SLOT_BORDER_WIDTH, SLOT_SIZE - 2 * SLOT_BORDER_WIDTH, SLOT_SIZE - 2 * SLOT_BORDER_WIDTH);
-
+        g2d.setFont(font.deriveFont(12.0f));
+        g2d.drawString("Reply Choice", inset + 10, inset + 18);
     }
 
     public class Header extends JPanel {
@@ -113,6 +104,7 @@ public class NodeUI extends JPanel {
             System.out.println(deltaX + ", " + deltaY);
             node.setLocation(node.getLocation().x + deltaX, node.getLocation().y + deltaY);
             lastMousePosition = newMousePosition;
+            getTopLevelAncestor().repaint();
         }
     }
 }
