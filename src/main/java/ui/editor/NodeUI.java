@@ -2,6 +2,8 @@ package ui.editor;
 
 import lombok.Getter;
 import lombok.Setter;
+import ui.FontAwesomeGlyph;
+import ui.GlyphIconPainter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,6 +62,8 @@ public class NodeUI extends JPanel {
 		g2d.setColor(new Color(0x738495));
 		g2d.setFont(font.deriveFont(12.0f));
 		g2d.drawString("Reply Choice", inset + 10, inset + 18);
+
+		GlyphIconPainter.drawIcon(g2d, FontAwesomeGlyph.LIST, 30, 30, 50);
 
 		for (Slot slot : slots) {
 			paintSlot(g2d, slot);
