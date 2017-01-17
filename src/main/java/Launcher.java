@@ -23,15 +23,6 @@ public class Launcher {
 
         frame.getContentPane().setLayout(new BorderLayout());
         JButton close = new JButton("Close");
-        close.setAction(new AbstractAction() {
-            {
-                putValue(Action.NAME, "Close");
-            }
-
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Close clicked");
-            }
-        });
         frame.getContentPane().add(close, BorderLayout.SOUTH);
 
         NodeEditor nodeEditor = new NodeEditor();
