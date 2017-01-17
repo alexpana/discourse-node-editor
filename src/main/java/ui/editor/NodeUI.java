@@ -1,6 +1,7 @@
 package ui.editor;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +20,9 @@ public class NodeUI extends JPanel {
 
 	@Getter
 	protected final List<Slot> slots = new ArrayList<>();
+
+	@Getter @Setter
+	private boolean isSelected = false;
 
 	public NodeUI() {
 		add(new Header(), BorderLayout.NORTH);
@@ -59,10 +63,14 @@ public class NodeUI extends JPanel {
 
 		int positionX = slot.getDirection() == Slot.Direction.INPUT ? 0 : (getWidth() - slotSize);
 		g2d.setColor(theme().getNodeBorderColor());
-		g2d.fillOval(positionX, slot.getPosition(), slotSize, slotSize);
+		drawCircle(g2d, positionX, slot.getPosition(), slotSize);
 
 		g2d.setColor(theme().getSlotColor());
-		g2d.fillOval(positionX + slotBorderWidth, slot.getPosition() + slotBorderWidth, slotSize - 2 * slotBorderWidth, slotSize - 2 * slotBorderWidth);
+		drawCircle(g2d, positionX + slotBorderWidth, slot.getPosition() + slotBorderWidth, slotSize - 2 * slotBorderWidth);
+	}
+
+	private void drawCircle(Graphics2D g2d, int x, int y, int size) {
+		g2d.fillRoundRect(x, y, size, size, size, size);
 	}
 
 	public class Header extends JPanel {
