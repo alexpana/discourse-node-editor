@@ -47,6 +47,22 @@ public class NodeUI extends JPanel {
 		g2d.setColor(new Color(0x738495));
 		g2d.setFont(font.deriveFont(12.0f));
 		g2d.drawString("Reply Choice", inset + 10, inset + 18);
+
+		for (Slot slot : slots) {
+			paintSlot(g2d, slot);
+		}
+	}
+
+	private void paintSlot(Graphics2D g2d, Slot slot) {
+		int slotSize = theme().getSlotSize();
+		int slotBorderWidth = theme().getSlotBorderWidth();
+
+		int positionX = slot.getDirection() == Slot.Direction.INPUT ? 0 : (getWidth() - slotSize);
+		g2d.setColor(theme().getNodeBorderColor());
+		g2d.fillOval(positionX, slot.getPosition(), slotSize, slotSize);
+
+		g2d.setColor(theme().getSlotColor());
+		g2d.fillOval(positionX + slotBorderWidth, slot.getPosition() + slotBorderWidth, slotSize - 2 * slotBorderWidth, slotSize - 2 * slotBorderWidth);
 	}
 
 	public class Header extends JPanel {

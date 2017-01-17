@@ -58,39 +58,12 @@ public class NodeEditor extends JPanel {
         }
 
         super.paintChildren(g);
-
-        for (Component component : getComponents()) {
-            if (component instanceof NodeUI) {
-                NodeUI node = (NodeUI) component;
-                for (Slot slot : node.getSlots()) {
-                    paintSlot(g2d, slot);
-                }
-            }
-        }
-
     }
 
     private Point getSlotLocation(Slot slot) {
         NodeUI node = slot.getNode();
         int positionX = slot.getDirection() == Slot.Direction.INPUT ? 0 : (node.getWidth() - theme().getSlotSize());
         return new Point(node.getX() + positionX + theme().getSlotSize() / 2, node.getY() + slot.getPosition() + theme().getSlotSize() / 2);
-    }
-
-    private void paintSlot(Graphics2D g2d, Slot slot) {
-        NodeUI node = slot.getNode();
-        int slotSize = theme().getSlotSize();
-        int slotBorderWidth = theme().getSlotBorderWidth();
-
-        int positionX = slot.getDirection() == Slot.Direction.INPUT ? 0 : (node.getWidth() - slotSize);
-        g2d.translate(node.getX(), node.getY());
-
-        g2d.setColor(theme().getNodeBorderColor());
-        g2d.fillOval(positionX, slot.getPosition(), slotSize, slotSize);
-
-        g2d.setColor(theme().getSlotColor());
-        g2d.fillOval(positionX + slotBorderWidth, slot.getPosition() + slotBorderWidth, slotSize - 2 * slotBorderWidth, slotSize - 2 * slotBorderWidth);
-
-        g2d.translate(-node.getX(), -node.getY());
     }
 
     @RequiredArgsConstructor
