@@ -11,6 +11,8 @@ import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.awt.event.MouseEvent.BUTTON1;
+import static java.awt.event.MouseEvent.BUTTON2;
 import static ui.Theme.theme;
 
 public class NodeEditor extends JPanel {
@@ -24,6 +26,18 @@ public class NodeEditor extends JPanel {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == BUTTON1) {
+					for (NodeUI nodeUI : nodeUIList) {
+						if (nodeUI.getBounds().contains(e.getX(), e.getY())) {
+							nodeUI.setSelected(true);
+							invalidate();
+						}
+					}
+				}
+
+				if (e.getButton() != BUTTON2) {
+					return;
+				}
 				JPopupMenu popupMenu = new JPopupMenu();
 				popupMenu.add("Reply Choice");
 				popupMenu.add("Decision");
@@ -36,6 +50,7 @@ public class NodeEditor extends JPanel {
 
 	public void addNode(NodeUI nodeUI, int x, int y) {
 		add(nodeUI);
+		nodeUIList.add(nodeUI);
 		nodeUI.setBounds(x, y, (int) nodeUI.getPreferredSize().getWidth(), (int) nodeUI.getPreferredSize().getHeight());
 	}
 

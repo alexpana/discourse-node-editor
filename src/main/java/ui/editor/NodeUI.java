@@ -37,8 +37,17 @@ public class NodeUI extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+		if (isSelected) {
+			Color focusHalo = theme().getSelectionColor();
+			Color transparentFocusHalo = new Color((focusHalo.getRGB() << 8) + 0x50, true);
+			g2d.setColor(transparentFocusHalo);
+			g2d.fillRoundRect(inset - 2, inset - 2, getWidth() - 2 * inset + 4, getHeight() - 2 * inset + 4, 8, 8);
+			g2d.setColor(theme().getSelectionColor());
+			g2d.fillRoundRect(inset - 1, inset - 1, getWidth() - 2 * inset + 2, getHeight() - 2 * inset + 2, 6, 6);
+		}
+
 		g2d.setColor(theme().getNodeBorderColor());
-		g2d.fillRoundRect(inset, inset, getWidth() - 2 * inset, getHeight() - 2 * inset, 4, 4);
+		g2d.fillRoundRect(inset, inset, getWidth() - 2 * inset, getHeight() - 2 * inset, 6, 6);
 
 		g2d.setColor(theme().getNodeSpecularColor());
 		g2d.fillRoundRect(inset + 2, inset + 2, getWidth() - 2 * inset - 4, getHeight() - 2 * inset - 4, 4, 4);
