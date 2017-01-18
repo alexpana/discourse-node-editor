@@ -30,7 +30,9 @@ public class NodeUI extends JPanel {
 
     public NodeUI(NodeContent nodeContent) {
         this.content = nodeContent;
+        setLayout(new BorderLayout());
         add(new Header(), BorderLayout.NORTH);
+        add(content.getContent(), BorderLayout.CENTER);
         setPreferredSize(content.getPreferredSize());
         Toolkit.getDefaultToolkit().addAWTEventListener(new MouseDragListener(), MOUSE_MOTION_EVENT_MASK | MOUSE_EVENT_MASK);
     }
@@ -135,7 +137,10 @@ public class NodeUI extends JPanel {
             if (mouseEvent.getID() == Event.MOUSE_DOWN) {
                 Point localPoint = new Point(mousePoint);
                 SwingUtilities.convertPointFromScreen(localPoint, node);
-                if (node.contains(localPoint)) {
+                Component child = node.getComponentAt(localPoint);
+                System.out.println("localPoint = " + localPoint);
+                System.out.println("child = " + child);
+                if (node.contains(localPoint) && (child == null || child instanceof JPanel || child instanceof JLabel)) {
                     node.beginDrag(mousePoint);
                 }
             }

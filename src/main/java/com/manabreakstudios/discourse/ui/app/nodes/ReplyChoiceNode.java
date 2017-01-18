@@ -25,15 +25,17 @@ public class ReplyChoiceNode implements NodeContent {
     @Getter
     private final List<Slot> slots = new ArrayList<>();
 
+    @Getter
+    private final JPanel content = new JPanel();
+
     public ReplyChoiceNode() {
         slots.add(new Slot(INPUT, 0, 13));
         slots.add(new Slot(OUTPUT, 1, 40));
         slots.add(new Slot(OUTPUT, 2, 60));
-    }
-
-    @Override
-    public JPanel getContent() {
-        return null;
+        content.setOpaque(false);
+        content.setLayout(new FlowLayout());
+        content.add(new JLabel("Choice: "));
+        content.add(new JTextField());
     }
 
     @Override
