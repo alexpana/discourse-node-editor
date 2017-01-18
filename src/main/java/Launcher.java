@@ -1,7 +1,8 @@
 import com.bulenkov.darcula.DarculaLaf;
 import com.manabreakstudios.discourse.ui.Theme;
-import com.manabreakstudios.discourse.ui.core.nodeeditor.NodeEditor;
 import com.manabreakstudios.discourse.ui.app.nodes.ReplyChoiceNode;
+import com.manabreakstudios.discourse.ui.core.nodeeditor.NodeEditor;
+import com.manabreakstudios.discourse.ui.core.nodeeditor.NodeUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,17 +25,17 @@ public class Launcher {
 
         NodeEditor nodeEditor = new NodeEditor();
 
-        ReplyChoiceNode nodeA = new ReplyChoiceNode();
+        NodeUI nodeA = new NodeUI(new ReplyChoiceNode());
         nodeEditor.addNode(nodeA, 10, 10);
 
-        ReplyChoiceNode nodeB = new ReplyChoiceNode();
+        NodeUI nodeB = new NodeUI(new ReplyChoiceNode());
         nodeEditor.addNode(nodeB, 300, 20);
 
-        ReplyChoiceNode nodeC = new ReplyChoiceNode();
+        NodeUI nodeC = new NodeUI(new ReplyChoiceNode());
         nodeEditor.addNode(nodeC, 300, 200);
 
-        nodeEditor.connect(nodeA, nodeA.getSlots().get(1), nodeB, nodeB.getSlots().get(0));
-        nodeEditor.connect(nodeA, nodeA.getSlots().get(2), nodeC, nodeC.getSlots().get(0));
+        nodeEditor.connect(nodeA.getSlot(1), nodeB.getSlot(0));
+        nodeEditor.connect(nodeA.getSlot(2), nodeC.getSlot(0));
 
         frame.getContentPane().add(nodeEditor);
         frame.invalidate();

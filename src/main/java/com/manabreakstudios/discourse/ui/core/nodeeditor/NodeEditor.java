@@ -1,8 +1,5 @@
 package com.manabreakstudios.discourse.ui.core.nodeeditor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,9 +8,9 @@ import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.manabreakstudios.discourse.ui.Theme.theme;
 import static java.awt.event.MouseEvent.BUTTON1;
 import static java.awt.event.MouseEvent.BUTTON2;
-import static com.manabreakstudios.discourse.ui.Theme.theme;
 
 public class NodeEditor extends JPanel {
 
@@ -52,6 +49,10 @@ public class NodeEditor extends JPanel {
         add(nodeUI);
         nodeUIList.add(nodeUI);
         nodeUI.setBounds(x, y, (int) nodeUI.getPreferredSize().getWidth(), (int) nodeUI.getPreferredSize().getHeight());
+    }
+
+    public void connect(SlotBinding from, SlotBinding to) {
+        connect(from.getNode(), from.getSlot(), to.getNode(), to.getSlot());
     }
 
     public void connect(NodeUI nodeFrom, Slot slotFrom, NodeUI nodeTo, Slot slotTo) {
@@ -93,23 +94,6 @@ public class NodeEditor extends JPanel {
         NodeUI node = slotBinding.getNode();
         int positionX = slot.getDirection() == Slot.Direction.INPUT ? 0 : (node.getWidth() - theme().getSlotSize());
         return new Point(node.getX() + positionX + theme().getSlotSize() / 2, node.getY() + slot.getPosition() + theme().getSlotSize() / 2);
-    }
-
-    @RequiredArgsConstructor
-    private static class Connection {
-
-        @Getter
-        private final SlotBinding from;
-        @Getter
-        private final SlotBinding to;
-    }
-
-    @RequiredArgsConstructor
-    private static class SlotBinding {
-        @Getter
-        private final NodeUI node;
-        @Getter
-        private final Slot slot;
     }
 
     private static class NodeLayoutManager implements LayoutManager {

@@ -1,6 +1,5 @@
 package com.manabreakstudios.discourse.ui.core.nodeeditor;
 
-import com.manabreakstudios.discourse.ui.IconRepository;
 import com.manabreakstudios.discourse.ui.Theme;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,12 +7,8 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.AWTEventListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 
-import static java.awt.AWTEvent.*;
 import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
 import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
 
@@ -22,8 +17,7 @@ import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
  */
 public class NodeUI extends JPanel {
 
-    @Getter
-    protected final List<Slot> slots = new ArrayList<>();
+    private final NodeContent content;
 
     @Getter @Setter
     private boolean isSelected = false;
@@ -34,9 +28,15 @@ public class NodeUI extends JPanel {
 
     private Point tempPoint = new Point();
 
-    public NodeUI() {
+    public NodeUI(NodeContent nodeContent) {
+        this.content = nodeContent;
         add(new Header(), BorderLayout.NORTH);
+        setPreferredSize(content.getPreferredSize());
         Toolkit.getDefaultToolkit().addAWTEventListener(new MouseDragListener(), MOUSE_MOTION_EVENT_MASK | MOUSE_EVENT_MASK);
+    }
+
+    public SlotBinding getSlot(int index) {
+        return new SlotBinding(this, content.getSlots().get(index));
     }
 
     @Override
@@ -68,11 +68,11 @@ public class NodeUI extends JPanel {
 
         Font font = (Font) UIManager.getDefaults().get("Font.OpenSans-ExtraBold");
 
-        g2d.setColor(new Color(0x738495));
+        g2d.setColor(content.getColor());
         g2d.setFont(font.deriveFont(12.0f));
-        g2d.drawString("Reply Choice", inset + 10, inset + 18);
+        g2d.drawString(content.getTitle(), inset + 10, inset + 18);
 
-        for (Slot slot : slots) {
+        for (Slot slot : content.getSlots()) {
             paintSlot(g2d, slot);
         }
     }

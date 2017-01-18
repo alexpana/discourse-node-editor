@@ -17,4 +17,6 @@ public interface NodeContent {
     BufferedImage getIcon();
 
     List<Slot> getSlots();
+
+    Dimension getPreferredSize();
 }
