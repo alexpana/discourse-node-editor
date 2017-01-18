@@ -28,6 +28,9 @@ public class Theme {
     private final Color linkColor = new Color(0x90969C);
 
     @Getter
+    private final Color gridColor = new Color(0x424548);
+
+    @Getter
     private final int slotSize = 11;
 
     @Getter

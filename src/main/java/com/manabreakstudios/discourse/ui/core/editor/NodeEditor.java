@@ -12,8 +12,8 @@ import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.manabreakstudios.discourse.ui.Theme.theme;
 import static com.manabreakstudios.discourse.ui.SwingToolbox.*;
+import static com.manabreakstudios.discourse.ui.Theme.theme;
 import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
 import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
 import static java.awt.event.InputEvent.CTRL_MASK;
@@ -29,6 +29,8 @@ public class NodeEditor extends JPanel {
     private final List<Connection> connections = new ArrayList<>();
 
     private final DragHelper dragHelper = new DragHelper();
+
+    private final Grid grid = new Grid();
 
     public NodeEditor() {
         setLayout(new NodeLayoutManager());
@@ -72,6 +74,12 @@ public class NodeEditor extends JPanel {
 
     public void connect(NodeUI nodeFrom, Slot slotFrom, NodeUI nodeTo, Slot slotTo) {
         connections.add(new Connection(new SlotBinding(nodeFrom, slotFrom), new SlotBinding(nodeTo, slotTo)));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        grid.paint(g, 0, 0, getWidth(), getHeight());
     }
 
     @Override

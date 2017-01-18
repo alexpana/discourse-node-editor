@@ -16,6 +16,9 @@ public class DragHelper {
     @Getter
     private Point deltaMove = new Point();
 
+    @Getter
+    private Point totalDelta = new Point();
+
     public void beginDrag(Point mouseLocation) {
         isDragging = true;
         startLocation.setLocation(mouseLocation);
@@ -32,6 +35,7 @@ public class DragHelper {
             return;
         }
         deltaMove.setLocation(mouseLocation.x - updateLocation.x, mouseLocation.y - updateLocation.y);
+        totalDelta.setLocation(mouseLocation.x - startLocation.x, mouseLocation.y - startLocation.y);
         updateLocation.setLocation(mouseLocation);
     }
 }
