@@ -1,4 +1,4 @@
-package com.manabreakstudios.discourse.ui.core.nodeeditor;
+package com.manabreakstudios.discourse.ui.core.editor;
 
 import com.manabreakstudios.discourse.ui.Theme;
 import lombok.Getter;
@@ -6,11 +6,6 @@ import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.AWTEventListener;
-import java.awt.event.MouseEvent;
-
-import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
-import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
 
 /**
  * A NodeUI is a UI component that holds a node.
@@ -22,19 +17,12 @@ public class NodeUI extends JPanel {
     @Getter @Setter
     private boolean isSelected = false;
 
-    private Point lastMousePosition;
-
-    private boolean isDragging = false;
-
-    private Point tempPoint = new Point();
-
     public NodeUI(NodeContent nodeContent) {
         this.content = nodeContent;
         setLayout(new BorderLayout());
         add(new Header(), BorderLayout.NORTH);
         add(content.getContent(), BorderLayout.CENTER);
         setPreferredSize(content.getPreferredSize());
-        Toolkit.getDefaultToolkit().addAWTEventListener(new MouseDragListener(), MOUSE_MOTION_EVENT_MASK | MOUSE_EVENT_MASK);
     }
 
     public SlotBinding getSlot(int index) {
@@ -52,10 +40,11 @@ public class NodeUI extends JPanel {
 
         if (isSelected) {
             Color focusHalo = Theme.theme().getSelectionColor();
-            Color transparentFocusHalo = new Color((focusHalo.getRGB() << 8) + 0x50, true);
+            Color transparentFocusHalo = new Color((0x50 << 24) + focusHalo.getRGB(), true);
             g2d.setColor(transparentFocusHalo);
             g2d.fillRoundRect(inset - 2, inset - 2, getWidth() - 2 * inset + 4, getHeight() - 2 * inset + 4, 8, 8);
-            g2d.setColor(Theme.theme().getSelectionColor());
+            transparentFocusHalo = new Color((0xC0 << 24) + focusHalo.getRGB(), true);
+            g2d.setColor(transparentFocusHalo);
             g2d.fillRoundRect(inset - 1, inset - 1, getWidth() - 2 * inset + 2, getHeight() - 2 * inset + 2, 6, 6);
         }
 
@@ -102,54 +91,6 @@ public class NodeUI extends JPanel {
             setMinimumSize(new Dimension(100, 20));
             setPreferredSize(new Dimension(1000, 20));
             setMaximumSize(new Dimension(2000, 20));
-        }
-    }
-
-    private void beginDrag(Point mousePosition) {
-        lastMousePosition = mousePosition;
-        isDragging = true;
-    }
-
-    private void endDrag() {
-        isDragging = false;
-    }
-
-    private void updateDrag(Point newMousePosition) {
-        if (!isDragging) {
-            return;
-        }
-        int deltaX = newMousePosition.x - lastMousePosition.x;
-        int deltaY = newMousePosition.y - lastMousePosition.y;
-
-        getLocation(tempPoint);
-
-        setLocation(tempPoint.x + deltaX, tempPoint.y + deltaY);
-        lastMousePosition = newMousePosition;
-        getTopLevelAncestor().repaint();
-    }
-
-    private class MouseDragListener implements AWTEventListener {
-        @Override
-        public void eventDispatched(AWTEvent event) {
-            MouseEvent mouseEvent = (MouseEvent) event;
-            Point mousePoint = mouseEvent.getLocationOnScreen();
-            NodeUI node = NodeUI.this;
-            if (mouseEvent.getID() == Event.MOUSE_DOWN) {
-                Point localPoint = new Point(mousePoint);
-                SwingUtilities.convertPointFromScreen(localPoint, node);
-                Component child = node.getComponentAt(localPoint);
-                System.out.println("localPoint = " + localPoint);
-                System.out.println("child = " + child);
-                if (node.contains(localPoint) && (child == null || child instanceof JPanel || child instanceof JLabel)) {
-                    node.beginDrag(mousePoint);
-                }
-            }
-            if (mouseEvent.getID() == Event.MOUSE_UP) {
-                node.endDrag();
-            }
-            if (event.getID() == Event.MOUSE_DRAG) {
-                node.updateDrag(mousePoint);
-            }
         }
     }
 }

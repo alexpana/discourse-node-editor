@@ -1,4 +1,4 @@
-package com.manabreakstudios.discourse.ui.core.nodeeditor;
+package com.manabreakstudios.discourse.ui.core.editor;
 
 import javax.swing.*;
 import java.awt.*;

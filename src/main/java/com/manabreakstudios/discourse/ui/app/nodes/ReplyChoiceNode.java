@@ -1,7 +1,7 @@
 package com.manabreakstudios.discourse.ui.app.nodes;
 
-import com.manabreakstudios.discourse.ui.core.nodeeditor.NodeContent;
-import com.manabreakstudios.discourse.ui.core.nodeeditor.Slot;
+import com.manabreakstudios.discourse.ui.core.editor.NodeContent;
+import com.manabreakstudios.discourse.ui.core.editor.Slot;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.manabreakstudios.discourse.ui.Theme.theme;
-import static com.manabreakstudios.discourse.ui.core.nodeeditor.Slot.Direction.INPUT;
-import static com.manabreakstudios.discourse.ui.core.nodeeditor.Slot.Direction.OUTPUT;
+import static com.manabreakstudios.discourse.ui.core.editor.Slot.Direction.INPUT;
+import static com.manabreakstudios.discourse.ui.core.editor.Slot.Direction.OUTPUT;
 
 public class ReplyChoiceNode implements NodeContent {
 

@@ -1,8 +1,8 @@
 import com.bulenkov.darcula.DarculaLaf;
 import com.manabreakstudios.discourse.ui.Theme;
 import com.manabreakstudios.discourse.ui.app.nodes.ReplyChoiceNode;
-import com.manabreakstudios.discourse.ui.core.nodeeditor.NodeEditor;
-import com.manabreakstudios.discourse.ui.core.nodeeditor.NodeUI;
+import com.manabreakstudios.discourse.ui.core.editor.NodeEditor;
+import com.manabreakstudios.discourse.ui.core.editor.NodeUI;
 
 import javax.swing.*;
 import java.awt.*;
