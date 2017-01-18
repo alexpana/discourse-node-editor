@@ -1,4 +1,4 @@
-package ui.editor;
+package com.manabreakstudios.discourse.ui.editor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

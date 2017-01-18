@@ -1,4 +1,4 @@
-package ui;
+package com.manabreakstudios.discourse.ui;
 
 import lombok.Getter;
 
@@ -43,15 +43,19 @@ public class Theme {
     private final Font fontAwesome;
 
     @Getter
-    private final Color selectionColor = new Color(0xB66840);
+    private final Color selectionColor = new Color(0xFFB384);
 
-    private final Color choiceNodeColor = new Color(0x323232);
+    @Getter
+    private final Color choiceNodeColor = new Color(0x738495);
 
-    private final Color checkNodeColor = new Color(0x323232);
+    @Getter
+    private final Color checkNodeColor = new Color(0xA67557);
 
-    private final Color propertyUpdateNodeColor = new Color(0x323232);
+    @Getter
+    private final Color propertyUpdateNodeColor = new Color(0x4EB3B3);
 
-    private final Color scriptNodeColor = new Color(0x323232);
+    @Getter
+    private final Color scriptNodeColor = new Color(0x55A5F0);
 
     private Theme(UIDefaults uiDefaults) {
         boldFont = uiDefaults.getFont("Font.OpenSans-ExtraBold");

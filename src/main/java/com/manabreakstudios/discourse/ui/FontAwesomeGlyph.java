@@ -1,4 +1,4 @@
-package ui;
+package com.manabreakstudios.discourse.ui;
 
 
 /**

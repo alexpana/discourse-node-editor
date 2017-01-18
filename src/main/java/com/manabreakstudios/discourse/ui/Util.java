@@ -1,4 +1,4 @@
-package ui;
+package com.manabreakstudios.discourse.ui;
 
 import javax.swing.*;
 import java.util.HashMap;

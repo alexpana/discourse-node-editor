@@ -1,4 +1,4 @@
-package ui.editor;
+package com.manabreakstudios.discourse.ui.editor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.awt.event.MouseEvent.BUTTON1;
 import static java.awt.event.MouseEvent.BUTTON2;
-import static ui.Theme.theme;
+import static com.manabreakstudios.discourse.ui.Theme.theme;
 
 public class NodeEditor extends JPanel {
 
