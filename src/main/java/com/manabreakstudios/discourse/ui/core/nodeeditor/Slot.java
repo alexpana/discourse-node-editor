@@ -1,4 +1,4 @@
-package com.manabreakstudios.discourse.ui.editor;
+package com.manabreakstudios.discourse.ui.core.nodeeditor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,9 +8,6 @@ public class Slot {
     public enum Direction {
         INPUT, OUTPUT
     }
-
-    @Getter
-    private final NodeUI node;
 
     @Getter
     private final Direction direction;

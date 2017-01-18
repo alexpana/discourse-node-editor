@@ -1,4 +1,4 @@
-package com.manabreakstudios.discourse.ui.editor;
+package com.manabreakstudios.discourse.ui.core.nodeeditor;
 
 import com.manabreakstudios.discourse.ui.IconRepository;
 import com.manabreakstudios.discourse.ui.Theme;
@@ -7,10 +7,13 @@ import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.AWTEventListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.awt.AWTEvent.*;
 import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
 import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
 
@@ -22,12 +25,18 @@ public class NodeUI extends JPanel {
     @Getter
     protected final List<Slot> slots = new ArrayList<>();
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private boolean isSelected = false;
+
+    private Point lastMousePosition;
+
+    private boolean isDragging = false;
+
+    private Point tempPoint = new Point();
 
     public NodeUI() {
         add(new Header(), BorderLayout.NORTH);
+        Toolkit.getDefaultToolkit().addAWTEventListener(new MouseDragListener(), MOUSE_MOTION_EVENT_MASK | MOUSE_EVENT_MASK);
     }
 
     @Override
@@ -63,9 +72,6 @@ public class NodeUI extends JPanel {
         g2d.setFont(font.deriveFont(12.0f));
         g2d.drawString("Reply Choice", inset + 10, inset + 18);
 
-
-        IconRepository.getReplyChoiceNodeIcon().paintIcon(this, g2d, 10, 10);
-
         for (Slot slot : slots) {
             paintSlot(g2d, slot);
         }
@@ -88,60 +94,57 @@ public class NodeUI extends JPanel {
     }
 
     public class Header extends JPanel {
-
-        private Point lastMousePosition;
-
-        private boolean isDragging = false;
-
-        public Header() {
-            Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
-                MouseEvent mouseEvent = (MouseEvent) event;
-                Point mousePoint = mouseEvent.getLocationOnScreen();
-                if (mouseEvent.getID() == Event.MOUSE_DOWN) {
-                    Point localPoint = new Point(mousePoint);
-                    SwingUtilities.convertPointFromScreen(localPoint, this);
-                    if (this.contains(localPoint)) {
-                        beginDrag(mousePoint);
-                    }
-                }
-                if (mouseEvent.getID() == Event.MOUSE_UP) {
-                    endDrag();
-                }
-                if (event.getID() == Event.MOUSE_DRAG) {
-                    updateDrag(mousePoint);
-                }
-            }, MOUSE_MOTION_EVENT_MASK | MOUSE_EVENT_MASK);
-
+        Header() {
             setLayout(new BorderLayout());
             setOpaque(false);
             setMinimumSize(new Dimension(100, 20));
             setPreferredSize(new Dimension(1000, 20));
             setMaximumSize(new Dimension(2000, 20));
-
-            setBackground(Color.red);
-            setOpaque(true);
         }
+    }
 
-        private void beginDrag(Point mousePosition) {
-            lastMousePosition = mousePosition;
-            isDragging = true;
+    private void beginDrag(Point mousePosition) {
+        lastMousePosition = mousePosition;
+        isDragging = true;
+    }
+
+    private void endDrag() {
+        isDragging = false;
+    }
+
+    private void updateDrag(Point newMousePosition) {
+        if (!isDragging) {
+            return;
         }
+        int deltaX = newMousePosition.x - lastMousePosition.x;
+        int deltaY = newMousePosition.y - lastMousePosition.y;
 
-        private void endDrag() {
-            isDragging = false;
-        }
+        getLocation(tempPoint);
 
-        private void updateDrag(Point newMousePosition) {
-            if (!isDragging) {
-                return;
-            }
-            int deltaX = newMousePosition.x - lastMousePosition.x;
-            int deltaY = newMousePosition.y - lastMousePosition.y;
+        setLocation(tempPoint.x + deltaX, tempPoint.y + deltaY);
+        lastMousePosition = newMousePosition;
+        getTopLevelAncestor().repaint();
+    }
 
+    private class MouseDragListener implements AWTEventListener {
+        @Override
+        public void eventDispatched(AWTEvent event) {
+            MouseEvent mouseEvent = (MouseEvent) event;
+            Point mousePoint = mouseEvent.getLocationOnScreen();
             NodeUI node = NodeUI.this;
-            node.setLocation(node.getLocation().x + deltaX, node.getLocation().y + deltaY);
-            lastMousePosition = newMousePosition;
-            getTopLevelAncestor().repaint();
+            if (mouseEvent.getID() == Event.MOUSE_DOWN) {
+                Point localPoint = new Point(mousePoint);
+                SwingUtilities.convertPointFromScreen(localPoint, node);
+                if (node.contains(localPoint)) {
+                    node.beginDrag(mousePoint);
+                }
+            }
+            if (mouseEvent.getID() == Event.MOUSE_UP) {
+                node.endDrag();
+            }
+            if (event.getID() == Event.MOUSE_DRAG) {
+                node.updateDrag(mousePoint);
+            }
         }
     }
 }
