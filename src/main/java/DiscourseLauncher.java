@@ -9,7 +9,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Launcher {
+public class DiscourseLauncher {
 
     public static void main(String[] args) throws UnsupportedLookAndFeelException, IOException, FontFormatException {
         initLookAndFeel();
@@ -52,7 +52,7 @@ public class Launcher {
     }
 
     private static void loadFont(String resourceName, String filePath) throws FontFormatException, IOException {
-        InputStream inputStream = Launcher.class.getResourceAsStream(filePath);
+        InputStream inputStream = DiscourseLauncher.class.getResourceAsStream(filePath);
         Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
         UIManager.getDefaults().put(resourceName, font);
     }
