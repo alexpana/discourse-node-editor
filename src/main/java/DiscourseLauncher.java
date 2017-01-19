@@ -38,7 +38,8 @@ public class DiscourseLauncher {
         nodeEditor.connect(nodeA.getSlot(2), nodeC.getSlot(0));
 
         frame.getContentPane().add(nodeEditor);
-        frame.invalidate();
+        frame.pack();
+        frame.setLocationRelativeTo(null);
     }
 
     private static void initLookAndFeel() throws UnsupportedLookAndFeelException, FontFormatException, IOException {

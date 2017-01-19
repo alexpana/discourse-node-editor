@@ -1,10 +1,10 @@
-package com.manabreakstudios.discourse.ui;
+package com.manabreakstudios.discourse.ui.core.utils;
 
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Util {
+public class DebugUtils {
 
 	public static Map<String, Object> searchDefaults(String key) {
 		Map<String, Object> result = new HashMap<>();

@@ -1,7 +1,7 @@
 package com.manabreakstudios.discourse.ui.core.editor;
 
-import com.manabreakstudios.discourse.ui.DragHelper;
-import com.manabreakstudios.discourse.ui.SwingToolbox;
+import com.manabreakstudios.discourse.ui.core.utils.DragHelper;
+import com.manabreakstudios.discourse.ui.core.utils.SwingUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +12,7 @@ import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.manabreakstudios.discourse.ui.SwingToolbox.*;
+import static com.manabreakstudios.discourse.ui.core.utils.SwingUtils.*;
 import static com.manabreakstudios.discourse.ui.Theme.theme;
 import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
 import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
@@ -129,7 +129,7 @@ public class NodeEditor extends JPanel {
             Point localPoint = screenToLocal(mouseEvent.getLocationOnScreen(), editor);
 
             if (mouseEvent.getID() == Event.MOUSE_DOWN) {
-                Component componentUnderCursor = SwingToolbox.getComponentAt(editor, localPoint);
+                Component componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint);
                 if (isInputTransparent(componentUnderCursor)) {
                     NodeUI node = getNodeUIAncestor(componentUnderCursor);
 

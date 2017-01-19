@@ -1,4 +1,4 @@
-package com.manabreakstudios.discourse.ui;
+package com.manabreakstudios.discourse.ui.core.utils;
 
 import lombok.Getter;
 

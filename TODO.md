@@ -2,13 +2,15 @@
 
 [ ] Add menu for adding new nodes
 
-[ ] Highlight selected node
-
 [ ] Add support for creating link
+
+
 
 # Done
 
 ## Version 0.1
+
+[x] Highlight selected node
 
 [x] Move slot rendering to NodeUI
 

@@ -1,4 +1,4 @@
-package com.manabreakstudios.discourse.ui;
+package com.manabreakstudios.discourse.ui.core.utils;
 
 import com.manabreakstudios.discourse.ui.core.editor.NodeUI;
 
@@ -7,9 +7,9 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class SwingToolbox {
+public class SwingUtils {
 
-    private static final List<Class> INPUT_TRANSPARENT_COMPONENTS = Arrays.asList(JLabel.class, JPanel.class);
+    private static final List<Class> INPUT_TRANSPARENT_COMPONENTS = Arrays.asList(JLabel.class, JPanel.class, JLayeredPane.class);
 
     public static Point screenToLocal(Point screen, Component component) {
         Point result = new Point(screen);
@@ -39,5 +39,9 @@ public class SwingToolbox {
             }
         }
         return false;
+    }
+
+    public static void drawCircle(Graphics2D g2d, int x, int y, int size) {
+        g2d.fillRoundRect(x, y, size, size, size, size);
     }
 }
