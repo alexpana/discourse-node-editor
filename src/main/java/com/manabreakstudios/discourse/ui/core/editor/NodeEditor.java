@@ -2,6 +2,7 @@ package com.manabreakstudios.discourse.ui.core.editor;
 
 import com.manabreakstudios.discourse.ui.core.utils.DragHelper;
 import com.manabreakstudios.discourse.ui.core.utils.SwingUtils;
+import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,8 +13,8 @@ import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.manabreakstudios.discourse.ui.core.utils.SwingUtils.*;
 import static com.manabreakstudios.discourse.ui.Theme.theme;
+import static com.manabreakstudios.discourse.ui.core.utils.SwingUtils.*;
 import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
 import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
 import static java.awt.event.InputEvent.CTRL_MASK;
@@ -29,6 +30,7 @@ public class NodeEditor extends JPanel {
     private final List<Connection> connections = new ArrayList<>();
 
     private final DragHelper dragHelper = new DragHelper();
+    private final ConnectionHelper connectionHelper = new ConnectionHelper();
 
     private final Grid grid = new Grid();
 
@@ -90,26 +92,33 @@ public class NodeEditor extends JPanel {
         for (Connection connection : connections) {
             Point positionFrom = getSlotLocation(connection.getFrom());
             Point positionTo = getSlotLocation(connection.getTo());
+            drawLink(g2d, positionFrom, positionTo);
+        }
 
-            int horizontalDistance = Math.abs(positionFrom.x - positionTo.x);
-            int handleOffset = Math.max(horizontalDistance / 2, 20);
-
-            CubicCurve2D cubicCurve2D = new CubicCurve2D.Float(
-                    positionFrom.x, positionFrom.y,
-                    positionFrom.x + handleOffset, positionFrom.y,
-                    positionTo.x - handleOffset, positionTo.y,
-                    positionTo.x, positionTo.y);
-
-            g2d.setColor(theme().getNodeBorderColor());
-            g2d.setStroke(new BasicStroke(5f));
-            g2d.draw(cubicCurve2D);
-
-            g2d.setColor(theme().getLinkColor());
-            g2d.setStroke(new BasicStroke(1.5f));
-            g2d.draw(cubicCurve2D);
+        if (connectionHelper.isConnecting) {
+            drawLink(g2d, connectionHelper.fromLocation, connectionHelper.toLocation);
         }
 
         super.paintChildren(g);
+    }
+
+    private void drawLink(Graphics2D g2d, Point positionFrom, Point positionTo) {
+        int horizontalDistance = Math.abs(positionFrom.x - positionTo.x);
+        int handleOffset = Math.max(horizontalDistance / 2, 20);
+
+        CubicCurve2D cubicCurve2D = new CubicCurve2D.Float(
+                positionFrom.x, positionFrom.y,
+                positionFrom.x + handleOffset, positionFrom.y,
+                positionTo.x - handleOffset, positionTo.y,
+                positionTo.x, positionTo.y);
+
+        g2d.setColor(theme().getNodeBorderColor());
+        g2d.setStroke(new BasicStroke(5f));
+        g2d.draw(cubicCurve2D);
+
+        g2d.setColor(theme().getLinkColor());
+        g2d.setStroke(new BasicStroke(1.5f));
+        g2d.draw(cubicCurve2D);
     }
 
     private Point getSlotLocation(SlotBinding slotBinding) {
@@ -127,10 +136,12 @@ public class NodeEditor extends JPanel {
             NodeEditor editor = NodeEditor.this;
             Point mousePoint = mouseEvent.getPoint();
             Point localPoint = screenToLocal(mouseEvent.getLocationOnScreen(), editor);
+            Component componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint);
 
             if (mouseEvent.getID() == Event.MOUSE_DOWN) {
-                Component componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint);
-                if (isInputTransparent(componentUnderCursor)) {
+                if (componentUnderCursor instanceof SlotComponent) {
+                    connectionHelper.beginConnection(((SlotComponent) componentUnderCursor).getSlotBinding());
+                } else if (isInputTransparent(componentUnderCursor)) {
                     NodeUI node = getNodeUIAncestor(componentUnderCursor);
 
                     if (node != null) {
@@ -153,6 +164,12 @@ public class NodeEditor extends JPanel {
             }
 
             if (mouseEvent.getID() == Event.MOUSE_UP) {
+                if (componentUnderCursor instanceof SlotComponent) {
+                    connectionHelper.endConnection(((SlotComponent) componentUnderCursor).getSlotBinding());
+                } else {
+                    connectionHelper.stop();
+                }
+
                 if (dragHelper.isDragging()) {
                     endDrag();
                 } else {
@@ -162,6 +179,8 @@ public class NodeEditor extends JPanel {
 
             if (event.getID() == Event.MOUSE_DRAG) {
                 updateDrag(mousePoint);
+                connectionHelper.update(localPoint);
+                refresh();
             }
         }
     }
@@ -231,8 +250,44 @@ public class NodeEditor extends JPanel {
             temp.translate(dragHelper.getDeltaMove().x, dragHelper.getDeltaMove().y);
             selectedNode.setLocation(temp);
         }
+    }
 
-        refresh();
+    private class ConnectionHelper {
+        @Getter
+        private boolean isConnecting = false;
+
+        private SlotBinding from;
+
+        @Getter
+        private Point fromLocation;
+
+        @Getter
+        private Point toLocation;
+
+        public void beginConnection(SlotBinding from) {
+            this.from = from;
+            this.fromLocation = getSlotLocation(from);
+            this.toLocation = this.fromLocation;
+            this.isConnecting = true;
+        }
+
+        public void endConnection(SlotBinding to) {
+            connect(this.from, to);
+            stop();
+        }
+
+        public void update(Point mouseLocation) {
+            this.toLocation = mouseLocation;
+        }
+
+        public void cancel() {
+            stop();
+        }
+
+        public void stop() {
+            from = null;
+            isConnecting = false;
+        }
     }
 
     private static class NodeLayoutManager implements LayoutManager {

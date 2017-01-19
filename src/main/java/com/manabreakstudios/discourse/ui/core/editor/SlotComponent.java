@@ -1,6 +1,7 @@
 package com.manabreakstudios.discourse.ui.core.editor;
 
 import com.manabreakstudios.discourse.ui.Theme;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
@@ -11,6 +12,7 @@ import static com.manabreakstudios.discourse.ui.core.utils.SwingUtils.drawCircle
 @RequiredArgsConstructor
 public class SlotComponent extends JPanel {
 
+    @Getter
     private final SlotBinding slotBinding;
 
     public Slot getSlot() {
