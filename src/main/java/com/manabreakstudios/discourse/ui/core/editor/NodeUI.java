@@ -13,32 +13,31 @@ import static com.manabreakstudios.discourse.ui.Theme.theme;
 /**
  * A NodeUI is a UI component that holds a node.
  */
-public class NodeUI extends JPanel {
+public class NodeUI extends JLayeredPane {
 
     private final NodeContent content;
 
     private final List<SlotComponent> slotComponentList = new ArrayList<>();
-
-    private final JLayeredPane contentPanel = new JLayeredPane();
 
     private final Header header;
 
     @Getter @Setter
     private boolean isSelected = false;
 
+    @Getter @Setter
+    private boolean isTemporarySelected = false;
+
     public NodeUI(NodeContent nodeContent) {
         this.content = nodeContent;
         this.header = new Header(content);
 
-        setLayout(new BorderLayout());
-        add(contentPanel, BorderLayout.CENTER);
-        contentPanel.add(this.content.getContent(), JLayeredPane.DEFAULT_LAYER);
-        contentPanel.add(header, JLayeredPane.DEFAULT_LAYER);
-        contentPanel.setLayout(new ContentLayout());
+        setLayout(new ContentLayout());
+        add(this.content.getContent(), JLayeredPane.DEFAULT_LAYER);
+        add(header, JLayeredPane.DEFAULT_LAYER);
 
         for (Slot slot : this.content.getSlots()) {
             SlotComponent slotComponent = new SlotComponent(new SlotBinding(this, slot));
-            contentPanel.add(slotComponent, JLayeredPane.POPUP_LAYER);
+            add(slotComponent, JLayeredPane.POPUP_LAYER);
             slotComponentList.add(slotComponent);
         }
 
@@ -55,16 +54,6 @@ public class NodeUI extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        if (isSelected) {
-            Color focusHalo = theme().getSelectionColor();
-            Color transparentFocusHalo = new Color((0x50 << 24) + focusHalo.getRGB(), true);
-            g2d.setColor(transparentFocusHalo);
-            g2d.fillRoundRect(inset - 2, inset - 2, getWidth() - 2 * inset + 4, getHeight() - 2 * inset + 4, 8, 8);
-            transparentFocusHalo = new Color((0xC0 << 24) + focusHalo.getRGB(), true);
-            g2d.setColor(transparentFocusHalo);
-            g2d.fillRoundRect(inset - 1, inset - 1, getWidth() - 2 * inset + 2, getHeight() - 2 * inset + 2, 6, 6);
-        }
 
         g2d.setColor(theme().getNodeBorderColor());
         g2d.fillRoundRect(inset, inset, getWidth() - 2 * inset, getHeight() - 2 * inset, 6, 6);
@@ -96,6 +85,10 @@ public class NodeUI extends JPanel {
         }
     }
 
+    public Rectangle getHitbox() {
+        return new Rectangle(getX() + getInset(), getY() + getInset(), getWidth() - 2 * getInset(), getHeight() - 2 * getInset());
+    }
+
     public class ContentLayout implements LayoutManager {
 
         @Override
@@ -118,8 +111,9 @@ public class NodeUI extends JPanel {
 
         @Override
         public void layoutContainer(Container parent) {
-            header.setBounds(0, 0, getWidth(), 20);
-            content.getContent().setBounds(0, 20, getWidth(), getHeight());
+            int inset = getInset();
+            header.setBounds(inset, inset, getWidth() - 2 * inset, 20);
+            content.getContent().setBounds(inset, inset + 20, getWidth() - 2 * inset, getHeight() - 2 * inset - 20);
             for (SlotComponent slotComponent : slotComponentList) {
                 int positionX = slotComponent.getSlot().getDirection() == Slot.Direction.INPUT ? 0 : (getWidth() - theme().getSlotSize());
                 slotComponent.setBounds(new Rectangle(positionX, slotComponent.getSlot().getPosition(), theme().getSlotSize(), theme().getSlotSize()));

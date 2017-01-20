@@ -31,6 +31,12 @@ public class Theme {
     private final Color gridColor = new Color(0x424548);
 
     @Getter
+    private final Color gridMajorColor = new Color(0x464A4D);
+
+    @Getter
+    private final Color marqueeSelectColor = new Color(0x90969C);
+
+    @Getter
     private final int slotSize = 11;
 
     @Getter

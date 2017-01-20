@@ -7,61 +7,38 @@ import lombok.Getter;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.AWTEventListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.CubicCurve2D;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.manabreakstudios.discourse.ui.Theme.theme;
+import static com.manabreakstudios.discourse.ui.core.editor.Renderer.*;
 import static com.manabreakstudios.discourse.ui.core.utils.SwingUtils.*;
 import static java.awt.AWTEvent.MOUSE_EVENT_MASK;
 import static java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK;
+import static java.awt.Event.*;
 import static java.awt.event.InputEvent.CTRL_MASK;
-import static java.awt.event.MouseEvent.BUTTON1;
-import static java.awt.event.MouseEvent.BUTTON2;
 
 public class NodeEditor extends JPanel {
 
     private final List<NodeUI> nodes = new ArrayList<>();
 
-    private final List<NodeUI> selectedNodes = new ArrayList<>();
-
     private final List<Connection> connections = new ArrayList<>();
 
     private final DragHelper dragHelper = new DragHelper();
+
     private final ConnectionHelper connectionHelper = new ConnectionHelper();
+
+    private final MarqueeSelection marqueeSelection = new MarqueeSelection();
 
     private final Grid grid = new Grid();
 
+    private final SelectionModel selection = new SelectionModel(this);
+
     public NodeEditor() {
-        setLayout(new NodeLayoutManager());
+        setLayout(new AbsoluteLayoutManager());
 
         Toolkit.getDefaultToolkit().addAWTEventListener(new MouseDragListener(), MOUSE_MOTION_EVENT_MASK | MOUSE_EVENT_MASK);
-
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == BUTTON1) {
-                    for (NodeUI nodeUI : nodes) {
-                        if (nodeUI.getBounds().contains(e.getX(), e.getY())) {
-                            nodeUI.setSelected(true);
-                            invalidate();
-                        }
-                    }
-                }
-
-                if (e.getButton() != BUTTON2) {
-                    return;
-                }
-                JPopupMenu popupMenu = new JPopupMenu();
-                popupMenu.add("Reply Choice");
-                popupMenu.add("Decision");
-                popupMenu.add("Reply");
-                popupMenu.add("Script");
-                popupMenu.show(NodeEditor.this, e.getX(), e.getY());
-            }
-        });
     }
 
     public void addNode(NodeUI nodeUI, int x, int y) {
@@ -82,10 +59,6 @@ public class NodeEditor extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         grid.paint(g, 0, 0, getWidth(), getHeight());
-    }
-
-    @Override
-    protected void paintChildren(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -99,26 +72,21 @@ public class NodeEditor extends JPanel {
             drawLink(g2d, connectionHelper.fromLocation, connectionHelper.toLocation);
         }
 
-        super.paintChildren(g);
+        for (NodeUI nodeUI : selection.getSelectedNodes()) {
+            drawNodeHighlight(g2d, nodeUI.getBounds());
+        }
+        for (NodeUI nodeUI : selection.getTemporarySelectedNodes()) {
+            drawNodeHighlight(g2d, nodeUI.getBounds());
+        }
     }
 
-    private void drawLink(Graphics2D g2d, Point positionFrom, Point positionTo) {
-        int horizontalDistance = Math.abs(positionFrom.x - positionTo.x);
-        int handleOffset = Math.max(horizontalDistance / 2, 20);
+    @Override
+    protected void paintChildren(Graphics g) {
+        super.paintChildren(g);
 
-        CubicCurve2D cubicCurve2D = new CubicCurve2D.Float(
-                positionFrom.x, positionFrom.y,
-                positionFrom.x + handleOffset, positionFrom.y,
-                positionTo.x - handleOffset, positionTo.y,
-                positionTo.x, positionTo.y);
-
-        g2d.setColor(theme().getNodeBorderColor());
-        g2d.setStroke(new BasicStroke(5f));
-        g2d.draw(cubicCurve2D);
-
-        g2d.setColor(theme().getLinkColor());
-        g2d.setStroke(new BasicStroke(1.5f));
-        g2d.draw(cubicCurve2D);
+        if (marqueeSelection.isSelecting) {
+            drawSelection(g, marqueeSelection.rectangle);
+        }
     }
 
     private Point getSlotLocation(SlotBinding slotBinding) {
@@ -128,105 +96,67 @@ public class NodeEditor extends JPanel {
         return new Point(node.getX() + positionX + theme().getSlotSize() / 2, node.getY() + slot.getPosition() + theme().getSlotSize() / 2);
     }
 
+    private void onMouseDown(MouseEvent event) {
+        Point localPoint = screenToLocal(event.getLocationOnScreen(), this);
+        Component componentUnderCursor = SwingUtils.getComponentAt(this, localPoint);
 
-    private class MouseDragListener implements AWTEventListener {
-        @Override
-        public void eventDispatched(AWTEvent event) {
-            MouseEvent mouseEvent = (MouseEvent) event;
-            NodeEditor editor = NodeEditor.this;
-            Point mousePoint = mouseEvent.getPoint();
-            Point localPoint = screenToLocal(mouseEvent.getLocationOnScreen(), editor);
-            Component componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint);
+        if (componentUnderCursor instanceof SlotComponent) {
+            connectionHelper.beginConnection(((SlotComponent) componentUnderCursor).getSlotBinding());
+        } else if (isInputTransparent(componentUnderCursor)) {
+            NodeUI node = getNodeUIAncestor(componentUnderCursor);
+            if (componentUnderCursor instanceof NodeUI && !((NodeUI) componentUnderCursor).getHitbox().contains(localPoint)) {
+                node = null;
+            }
 
-            if (mouseEvent.getID() == Event.MOUSE_DOWN) {
-                if (componentUnderCursor instanceof SlotComponent) {
-                    connectionHelper.beginConnection(((SlotComponent) componentUnderCursor).getSlotBinding());
-                } else if (isInputTransparent(componentUnderCursor)) {
-                    NodeUI node = getNodeUIAncestor(componentUnderCursor);
-
-                    if (node != null) {
-                        if ((((MouseEvent) event).getModifiers() & CTRL_MASK) != 0) {
-                            addToSelection(node);
-                        } else {
-                            if (!node.isSelected()) {
-                                setSelection(node);
-                            }
-                        }
-                        beginDrag(mousePoint);
-                    } else {
-                        clearSelection();
+            if (node != null) {
+                if ((event.getModifiers() & CTRL_MASK) != 0) {
+                    selection.add(node);
+                } else {
+                    if (!node.isSelected()) {
+                        selection.setSelection(node);
                     }
                 }
-            }
-
-            if (mouseEvent.getID() == Event.MOUSE_MOVE) {
-                System.out.println("component = " + SwingUtilities.getDeepestComponentAt(editor, localPoint.x, localPoint.y));
-            }
-
-            if (mouseEvent.getID() == Event.MOUSE_UP) {
-                if (componentUnderCursor instanceof SlotComponent) {
-                    connectionHelper.endConnection(((SlotComponent) componentUnderCursor).getSlotBinding());
-                } else {
-                    connectionHelper.stop();
-                }
-
-                if (dragHelper.isDragging()) {
-                    endDrag();
-                } else {
-                    clearSelection();
-                }
-            }
-
-            if (event.getID() == Event.MOUSE_DRAG) {
-                updateDrag(mousePoint);
-                connectionHelper.update(localPoint);
-                refresh();
+                beginDrag(localPoint);
+            } else {
+                marqueeSelection.beginSelection(localPoint);
             }
         }
     }
 
-    private void clearSelection() {
-        clearSelection(true);
-    }
+    private void mouseUp(MouseEvent event) {
+        Point localPoint = screenToLocal(event.getLocationOnScreen(), this);
+        Component componentUnderCursor = SwingUtils.getComponentAt(this, localPoint);
 
-
-    private void clearSelection(boolean refresh) {
-        for (NodeUI selectedNode : selectedNodes) {
-            selectedNode.setSelected(false);
+        if (componentUnderCursor instanceof SlotComponent) {
+            connectionHelper.endConnection(((SlotComponent) componentUnderCursor).getSlotBinding());
+        } else {
+            connectionHelper.stop();
         }
-        selectedNodes.clear();
 
-        if (refresh) {
-            refresh();
-        }
-    }
-
-    private void addToSelection(NodeUI node) {
-        addToSelection(node, true);
-    }
-
-    private void addToSelection(NodeUI node, boolean refresh) {
-        if (!node.isSelected()) {
-            node.setSelected(true);
-            selectedNodes.add(node);
-            if (refresh) {
-                refresh();
+        if (dragHelper.isDragging()) {
+            endDrag();
+        } else {
+            if (marqueeSelection.isSelecting) {
+                marqueeSelection.finishSelection(localPoint);
+                selection.commitTemporarySelection();
+            } else {
+                selection.clear();
             }
         }
     }
 
-    private void setSelection(NodeUI... nodes) {
-        clearSelection(false);
+    private void mouseDrag(MouseEvent event) {
+        Point localPoint = screenToLocal(event.getLocationOnScreen(), this);
 
-        for (NodeUI node : nodes) {
-            addToSelection(node, false);
-        }
+        updateDrag(localPoint);
+        connectionHelper.update(localPoint);
+        marqueeSelection.update(localPoint);
+        selection.temporarySelectFromMarquee(marqueeSelection.rectangle, nodes);
 
         refresh();
     }
 
-
-    private void refresh() {
+    public void refresh() {
         paintImmediately(getBounds());
     }
 
@@ -245,10 +175,40 @@ public class NodeEditor extends JPanel {
         dragHelper.updateDrag(newMousePosition);
 
         Point temp = new Point();
-        for (NodeUI selectedNode : selectedNodes) {
+        for (NodeUI selectedNode : selection.getSelectedNodes()) {
             selectedNode.getLocation(temp);
             temp.translate(dragHelper.getDeltaMove().x, dragHelper.getDeltaMove().y);
             selectedNode.setLocation(temp);
+        }
+    }
+
+    private class MarqueeSelection {
+
+        @Getter
+        private boolean isSelecting = false;
+
+        private final Point from = new Point();
+
+        private final Point to = new Point();
+
+        private final Rectangle rectangle = new Rectangle();
+
+        public void beginSelection(Point from) {
+            this.from.setLocation(from);
+        }
+
+        public void update(Point update) {
+            isSelecting = true;
+            to.setLocation(update);
+            int x = Math.min(from.x, to.x);
+            int y = Math.min(from.y, to.y);
+            int width = Math.abs(to.x - from.x);
+            int height = Math.abs(to.y - from.y);
+            rectangle.setBounds(x, y, width, height);
+        }
+
+        public void finishSelection(Point end) {
+            isSelecting = false;
         }
     }
 
@@ -290,7 +250,27 @@ public class NodeEditor extends JPanel {
         }
     }
 
-    private static class NodeLayoutManager implements LayoutManager {
+    private class MouseDragListener implements AWTEventListener {
+
+        @Override
+        public void eventDispatched(AWTEvent awtEvent) {
+            MouseEvent event = (MouseEvent) awtEvent;
+
+            switch (event.getID()) {
+                case MOUSE_DOWN:
+                    onMouseDown(event);
+                    break;
+                case MOUSE_UP:
+                    mouseUp(event);
+                    break;
+                case MOUSE_DRAG:
+                    mouseDrag(event);
+                    break;
+            }
+        }
+    }
+
+    private static class AbsoluteLayoutManager implements LayoutManager {
 
         @Override
         public void addLayoutComponent(String name, Component comp) {
