@@ -64,7 +64,7 @@ public class SelectionModel {
         temporarySelectedNodes.clear();
 
         for (NodeUI node : nodes) {
-            if (selectionRectangle.contains(node.getBounds())) {
+            if (selectionRectangle.contains(node.getHitbox())) {
                 temporarySelectedNodes.add(node);
                 node.setTemporarySelected(true);
             }

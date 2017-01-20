@@ -37,7 +37,6 @@ public class NodeEditor extends JPanel {
 
     public NodeEditor() {
         setLayout(new AbsoluteLayoutManager());
-
         Toolkit.getDefaultToolkit().addAWTEventListener(new MouseDragListener(), MOUSE_MOTION_EVENT_MASK | MOUSE_EVENT_MASK);
     }
 
@@ -102,11 +101,8 @@ public class NodeEditor extends JPanel {
 
         if (componentUnderCursor instanceof SlotComponent) {
             connectionHelper.beginConnection(((SlotComponent) componentUnderCursor).getSlotBinding());
-        } else if (isInputTransparent(componentUnderCursor)) {
-            NodeUI node = getNodeUIAncestor(componentUnderCursor);
-            if (componentUnderCursor instanceof NodeUI && !((NodeUI) componentUnderCursor).getHitbox().contains(localPoint)) {
-                node = null;
-            }
+        } else {
+            NodeUI node = getNodeUnderCursor(localPoint, componentUnderCursor);
 
             if (node != null) {
                 if ((event.getModifiers() & CTRL_MASK) != 0) {
@@ -116,11 +112,23 @@ public class NodeEditor extends JPanel {
                         selection.setSelection(node);
                     }
                 }
-                beginDrag(localPoint);
+
+                if (isInputTransparent(componentUnderCursor)) {
+                    beginDrag(localPoint);
+                }
             } else {
+                selection.clear();
                 marqueeSelection.beginSelection(localPoint);
             }
         }
+    }
+
+    private NodeUI getNodeUnderCursor(Point cursor, Component componentUnderCursor) {
+        NodeUI node = getNodeUIAncestor(componentUnderCursor);
+        if (componentUnderCursor instanceof NodeUI && !((NodeUI) componentUnderCursor).getHitbox().contains(cursor)) {
+            node = null;
+        }
+        return node;
     }
 
     private void mouseUp(MouseEvent event) {
@@ -139,8 +147,6 @@ public class NodeEditor extends JPanel {
             if (marqueeSelection.isSelecting) {
                 marqueeSelection.finishSelection(localPoint);
                 selection.commitTemporarySelection();
-            } else {
-                selection.clear();
             }
         }
     }
@@ -195,10 +201,14 @@ public class NodeEditor extends JPanel {
 
         public void beginSelection(Point from) {
             this.from.setLocation(from);
+            isSelecting = true;
         }
 
         public void update(Point update) {
-            isSelecting = true;
+            if (!isSelecting) {
+                return;
+            }
+
             to.setLocation(update);
             int x = Math.min(from.x, to.x);
             int y = Math.min(from.y, to.y);
@@ -209,6 +219,9 @@ public class NodeEditor extends JPanel {
 
         public void finishSelection(Point end) {
             isSelecting = false;
+            rectangle.setRect(0, 0, 0, 0);
+            from.setLocation(0, 0);
+            to.setLocation(0, 0);
         }
     }
 
@@ -282,12 +295,12 @@ public class NodeEditor extends JPanel {
 
         @Override
         public Dimension preferredLayoutSize(Container parent) {
-            return new Dimension(1000, 1000);
+            return new Dimension(1000, 600);
         }
 
         @Override
         public Dimension minimumLayoutSize(Container parent) {
-            return new Dimension(1000, 1000);
+            return new Dimension(1000, 600);
         }
 
         @Override
