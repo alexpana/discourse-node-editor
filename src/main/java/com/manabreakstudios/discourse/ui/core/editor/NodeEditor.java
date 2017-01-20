@@ -35,6 +35,8 @@ public class NodeEditor extends JPanel {
 
     private final SelectionModel selection = new SelectionModel(this);
 
+    private final Rectangle tempRect = new Rectangle();
+
     public NodeEditor() {
         setLayout(new AbsoluteLayoutManager());
         Toolkit.getDefaultToolkit().addAWTEventListener(new MouseDragListener(), MOUSE_MOTION_EVENT_MASK | MOUSE_EVENT_MASK);
@@ -72,10 +74,7 @@ public class NodeEditor extends JPanel {
         }
 
         for (NodeUI nodeUI : selection.getSelectedNodes()) {
-            drawNodeHighlight(g2d, nodeUI.getBounds());
-        }
-        for (NodeUI nodeUI : selection.getTemporarySelectedNodes()) {
-            drawNodeHighlight(g2d, nodeUI.getBounds());
+            drawNodeHighlight(g2d, expand(nodeUI.getHitbox(tempRect), 2));
         }
     }
 
@@ -146,9 +145,10 @@ public class NodeEditor extends JPanel {
         } else {
             if (marqueeSelection.isSelecting) {
                 marqueeSelection.finishSelection(localPoint);
-                selection.commitTemporarySelection();
             }
         }
+
+        refresh();
     }
 
     private void mouseDrag(MouseEvent event) {
@@ -157,7 +157,9 @@ public class NodeEditor extends JPanel {
         updateDrag(localPoint);
         connectionHelper.update(localPoint);
         marqueeSelection.update(localPoint);
-        selection.temporarySelectFromMarquee(marqueeSelection.rectangle, nodes);
+        if (marqueeSelection.isSelecting) {
+            selection.selectFromMarquee(marqueeSelection.rectangle, nodes);
+        }
 
         refresh();
     }

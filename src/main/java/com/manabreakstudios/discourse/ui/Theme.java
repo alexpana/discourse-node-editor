@@ -52,7 +52,8 @@ public class Theme {
     private final Font fontAwesome;
 
     @Getter
-    private final Color selectionColor = new Color(0xFFB384);
+    private final Color selectionColor = new Color(0x90FFB384, true);
+//    private final Color selectionColor = new Color(0xAA84C4FF, true);
 
     @Getter
     private final Color choiceNodeColor = new Color(0x738495);

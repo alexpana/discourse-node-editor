@@ -41,6 +41,11 @@ public class SwingUtils {
         return false;
     }
 
+    public static Rectangle expand(Rectangle rect, int size) {
+        rect.setRect(rect.x - size, rect.y - size, rect.width + 2 * size, rect.height + 2 * size);
+        return rect;
+    }
+
     public static void drawCircle(Graphics2D g2d, int x, int y, int size) {
         g2d.fillRoundRect(x, y, size, size, size, size);
     }

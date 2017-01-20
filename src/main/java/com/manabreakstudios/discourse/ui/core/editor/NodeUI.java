@@ -24,9 +24,6 @@ public class NodeUI extends JLayeredPane {
     @Getter @Setter
     private boolean isSelected = false;
 
-    @Getter @Setter
-    private boolean isTemporarySelected = false;
-
     public NodeUI(NodeContent nodeContent) {
         this.content = nodeContent;
         this.header = new Header(content);
@@ -86,7 +83,12 @@ public class NodeUI extends JLayeredPane {
     }
 
     public Rectangle getHitbox() {
-        return new Rectangle(getX() + getInset(), getY() + getInset(), getWidth() - 2 * getInset(), getHeight() - 2 * getInset());
+        return getHitbox(new Rectangle());
+    }
+
+    public Rectangle getHitbox(Rectangle rv) {
+        rv.setRect(getX() + getInset(), getY() + getInset(), getWidth() - 2 * getInset(), getHeight() - 2 * getInset());
+        return rv;
     }
 
     public class ContentLayout implements LayoutManager {

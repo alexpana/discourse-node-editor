@@ -57,27 +57,17 @@ public class SelectionModel {
         editor.refresh();
     }
 
-    public void temporarySelectFromMarquee(Rectangle selectionRectangle, List<NodeUI> nodes) {
-        for (NodeUI temporarySelectedNode : temporarySelectedNodes) {
-            temporarySelectedNode.setTemporarySelected(false);
+    public void selectFromMarquee(Rectangle selectionRectangle, List<NodeUI> nodes) {
+        for (NodeUI node : selectedNodes) {
+            node.setSelected(false);
         }
-        temporarySelectedNodes.clear();
+        selectedNodes.clear();
 
         for (NodeUI node : nodes) {
             if (selectionRectangle.contains(node.getHitbox())) {
-                temporarySelectedNodes.add(node);
-                node.setTemporarySelected(true);
+                selectedNodes.add(node);
+                node.setSelected(true);
             }
         }
-    }
-
-    public void commitTemporarySelection() {
-        clear(false);
-        for (NodeUI temporarySelectedNode : temporarySelectedNodes) {
-            add(temporarySelectedNode, false);
-            temporarySelectedNode.setTemporarySelected(false);
-        }
-        temporarySelectedNodes.clear();
-        editor.refresh();
     }
 }
