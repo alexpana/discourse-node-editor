@@ -28,7 +28,7 @@
             <artifactId>com.intellij</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/darcula.jar</systemPath>
+            <systemPath>app/lib/darcula.jar</systemPath>
         </dependency>
 
         <dependency>
