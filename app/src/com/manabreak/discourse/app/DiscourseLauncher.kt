@@ -5,10 +5,7 @@ import com.manabreak.node_editor.NodeUI
 import java.awt.BorderLayout
 import java.awt.FontFormatException
 import java.io.IOException
-import javax.swing.JFrame
-import javax.swing.UIManager
-import javax.swing.UnsupportedLookAndFeelException
-import javax.swing.WindowConstants
+import javax.swing.*
 
 object DiscourseLauncher {
 
@@ -36,12 +33,14 @@ object DiscourseLauncher {
         val nodeC = NodeUI(ReplyChoiceNode())
         nodeEditor.addNode(nodeC, 300, 200)
 
-        nodeEditor.link(nodeA.getSlot(1), nodeB.getSlot(0))
-        nodeEditor.link(nodeA.getSlot(2), nodeC.getSlot(0))
-
         frame.contentPane.add(nodeEditor)
         frame.pack()
         frame.setLocationRelativeTo(null)
+
+        SwingUtilities.invokeLater {
+            nodeEditor.link(nodeA.content.firstOutput, nodeB.content.input)
+            nodeEditor.link(nodeA.content.secondOutput, nodeC.content.input)
+        }
     }
 
     @Throws(UnsupportedLookAndFeelException::class, FontFormatException::class, IOException::class)

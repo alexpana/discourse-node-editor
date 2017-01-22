@@ -2,20 +2,16 @@ package com.manabreak.node_editor
 
 import com.manabreak.node_editor.Renderer.createSlotImage
 import com.manabreak.node_editor.Theme.Companion.theme
+import com.manabreak.node_editor.model.Slot
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import javax.swing.JPanel
 
-class SlotComponent constructor(val slotBinding: SlotBinding) : JPanel() {
+class SlotComponent constructor(val slot: Slot) : JPanel() {
 
-    var state = State.ACCEPT
-
-    val slot: Slot
-        get() {
-            return slotBinding.slot
-        }
+    var state = State.NORMAL
 
     override fun paintComponent(g: Graphics) {
         val g2d = g as Graphics2D
@@ -24,9 +20,9 @@ class SlotComponent constructor(val slotBinding: SlotBinding) : JPanel() {
     }
 
     enum class State constructor(image: BufferedImage) {
-        NORMAL(createSlotImage(theme.slotDefaultColor)),
-        ACCEPT(createSlotImage(theme.slotAcceptColor)),
-        DECLINE(createSlotImage(theme.slotDeclineColor));
+        NORMAL(createSlotImage(theme.nodeBorderColor, theme.slotDefaultColor, theme.slotBorderWidth)),
+        ACCEPT(createSlotImage(theme.nodeBorderColor, theme.slotAcceptColor, theme.slotBorderWidth)),
+        DECLINE(createSlotImage(theme.nodeBorderColor, theme.slotDeclineColor, theme.slotBorderWidth));
 
         val image: BufferedImage
 

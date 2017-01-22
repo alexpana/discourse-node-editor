@@ -14,11 +14,11 @@ object SwingUtils {
         return result
     }
 
-    fun getNodeUIAncestor(component: Component): NodeUI? {
+    fun getNodeUIAncestor(component: Component): NodeUI<*>? {
         var ancestor: Component? = component
         while (ancestor != null) {
-            if (ancestor is NodeUI) {
-                return ancestor as NodeUI?
+            if (ancestor is NodeUI<*>) {
+                return ancestor as NodeUI<*>?
             }
             ancestor = ancestor.parent
         }

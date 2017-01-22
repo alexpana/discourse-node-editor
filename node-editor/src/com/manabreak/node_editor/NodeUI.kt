@@ -1,18 +1,40 @@
 package com.manabreak.node_editor
 
 import com.manabreak.node_editor.Theme.Companion.theme
+import com.manabreak.node_editor.model.Slot
 import java.awt.*
 import java.util.*
 import javax.swing.JLayeredPane
 import javax.swing.JPanel
 
-class NodeUI constructor(private val content: NodeContent) : JLayeredPane() {
+class NodeUI<out T : NodeContent> constructor(val content: T) : JLayeredPane() {
 
     var selected = false
 
-    private val slotComponentList = ArrayList<SlotComponent>()
+    val model = content.node
+
+    private val slotComponents = ArrayList<SlotComponent>()
 
     private val header = Header(content)
+
+    private val children = ArrayList<Component>()
+
+    init {
+        layout = ContentLayout()
+        for (slot in this.content.slots) {
+            val slotComponent = SlotComponent(slot)
+            add(slotComponent, JLayeredPane.POPUP_LAYER)
+            children.add(slotComponent)
+            slotComponents.add(slotComponent)
+        }
+
+        add(this.content.content, JLayeredPane.DEFAULT_LAYER)
+        children.add(this.content.content)
+        add(header, JLayeredPane.DEFAULT_LAYER)
+        children.add(header)
+
+        preferredSize = this.content.preferredSize
+    }
 
     override fun paintComponent(g: Graphics) {
         val inset = getInset()
@@ -36,22 +58,12 @@ class NodeUI constructor(private val content: NodeContent) : JLayeredPane() {
         g2d.drawString(content.title, inset + 10, inset + 18)
     }
 
-    init {
-        layout = ContentLayout()
-        add(this.content.content, JLayeredPane.DEFAULT_LAYER)
-        add(header, JLayeredPane.DEFAULT_LAYER)
-
-        for (slot in this.content.slots) {
-            val slotComponent = SlotComponent(SlotBinding(this, slot))
-            add(slotComponent, JLayeredPane.POPUP_LAYER)
-            slotComponentList.add(slotComponent)
-        }
-
-        preferredSize = this.content.preferredSize
+    override fun getComponents(): Array<out Component>? {
+        return children.toTypedArray()
     }
 
-    fun getSlot(index: Int): SlotBinding {
-        return SlotBinding(this, content.slots[index])
+    fun getSlot(index: Int): Slot {
+        return content.slots[index]
     }
 
     fun getHitbox(): Rectangle {
@@ -67,6 +79,11 @@ class NodeUI constructor(private val content: NodeContent) : JLayeredPane() {
         return theme.slotSize / 2
     }
 
+    fun getSlotLocation(slot: Slot): Point {
+        val positionX = if (slot.direction == Slot.Direction.INPUT) 0 else width - theme.slotSize
+        return Point(x + positionX + theme.slotSize / 2, y + content.getSlotLocation(slot) + theme.slotSize / 2)
+    }
+
     inner class Header internal constructor(nodeContent: NodeContent) : JPanel() {
         init {
             layout = BorderLayout()
@@ -76,7 +93,6 @@ class NodeUI constructor(private val content: NodeContent) : JLayeredPane() {
             maximumSize = Dimension(2000, 20)
         }
     }
-
 
     inner class ContentLayout : LayoutManager {
 
@@ -98,10 +114,16 @@ class NodeUI constructor(private val content: NodeContent) : JLayeredPane() {
             val inset = getInset()
             header.setBounds(inset, inset, width - 2 * inset, 20)
             content.content.setBounds(inset, inset + 20, width - 2 * inset, height - 2 * inset - 20)
-            for (slotComponent in slotComponentList) {
-                val positionX = if (slotComponent.slot.direction === Slot.Direction.INPUT) 0 else width - theme.slotSize
-                slotComponent.bounds = Rectangle(positionX, slotComponent.slot.position, theme.slotSize, theme.slotSize)
+            for (slotComponent in slotComponents) {
+                val bounds = getSlotBounds(slotComponent)
+                slotComponent.bounds = bounds
             }
+        }
+
+        private fun getSlotBounds(slotComponent: SlotComponent): Rectangle {
+            val positionX = if (slotComponent.slot.direction === Slot.Direction.INPUT) 0 else width - theme.slotSize
+            val bounds = Rectangle(positionX, content.getSlotLocation(slotComponent.slot), theme.slotSize, theme.slotSize)
+            return bounds
         }
     }
 }

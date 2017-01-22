@@ -3,12 +3,14 @@ package com.manabreak.node_editor
 import com.manabreak.node_editor.Renderer.drawLink
 import com.manabreak.node_editor.Renderer.drawNodeHighlight
 import com.manabreak.node_editor.Renderer.drawSelection
-import com.manabreak.node_editor.SlotComponent.State.*
 import com.manabreak.node_editor.SwingUtils.expand
 import com.manabreak.node_editor.SwingUtils.getNodeUIAncestor
 import com.manabreak.node_editor.SwingUtils.isInputTransparent
 import com.manabreak.node_editor.SwingUtils.screenToLocal
-import com.manabreak.node_editor.Theme.Companion.theme
+import com.manabreak.node_editor.model.Node
+import com.manabreak.node_editor.model.Slot
+import com.manabreak.node_editor.model.Slot.Direction.INPUT
+import com.manabreak.node_editor.tools.CreateLinkTool
 import java.awt.*
 import java.awt.AWTEvent.MOUSE_EVENT_MASK
 import java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK
@@ -21,13 +23,15 @@ import javax.swing.JPanel
 
 class NodeEditor : JPanel() {
 
-    private val nodes = ArrayList<NodeUI>()
+    private val nodes = ArrayList<NodeUI<*>>()
 
-    private val links = ArrayList<Connection>()
+    private val nodeModelToComponent = HashMap<Node, NodeUI<*>>()
+
+    val linkManager = LinkManager()
 
     private val dragHelper = DragHelper()
 
-    private val connectionHelper = ConnectionHelper()
+    private val connectionHelper = CreateLinkTool(this)
 
     private val marqueeSelection = MarqueeSelection()
 
@@ -42,19 +46,16 @@ class NodeEditor : JPanel() {
         Toolkit.getDefaultToolkit().addAWTEventListener(MouseDragListener(), MOUSE_MOTION_EVENT_MASK or MOUSE_EVENT_MASK)
     }
 
-    @Suppress("unused")
-    fun addNode(nodeUI: NodeUI, x: Int, y: Int) {
+    fun addNode(nodeUI: NodeUI<*>, x: Int, y: Int) {
         add(nodeUI)
         nodes.add(nodeUI)
+        nodeModelToComponent[nodeUI.model] = nodeUI
         nodeUI.setBounds(x, y, nodeUI.preferredSize.getWidth().toInt(), nodeUI.preferredSize.getHeight().toInt())
     }
 
-    fun link(from: SlotBinding, to: SlotBinding) {
-        link(from.node, from.slot, to.node, to.slot)
-    }
-
-    fun link(nodeFrom: NodeUI, slotFrom: Slot, nodeTo: NodeUI, slotTo: Slot) {
-        links.add(Connection(SlotBinding(nodeFrom, slotFrom), SlotBinding(nodeTo, slotTo)))
+    fun link(from: Slot, to: Slot) {
+        linkManager.link(from, to)
+        refresh()
     }
 
     override fun paintComponent(g: Graphics) {
@@ -72,14 +73,22 @@ class NodeEditor : JPanel() {
         val g2d = g as Graphics2D
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
 
-        for ((from, to) in links) {
+        for ((from, to) in linkManager.links) {
             val positionFrom = getSlotLocation(from)
             val positionTo = getSlotLocation(to)
-            drawLink(g2d, positionFrom, positionTo)
+            if (from.direction == INPUT) {
+                drawLink(g2d, positionTo, positionFrom)
+            } else {
+                drawLink(g2d, positionFrom, positionTo)
+            }
         }
 
         if (connectionHelper.isConnecting) {
-            drawLink(g2d, connectionHelper.fromLocation, connectionHelper.toLocation)
+            if (connectionHelper.from!!.direction == INPUT) {
+                drawLink(g2d, connectionHelper.toLocation, connectionHelper.fromLocation)
+            } else {
+                drawLink(g2d, connectionHelper.fromLocation, connectionHelper.toLocation)
+            }
         }
 
         for (nodeUI in selection.selectedNodes) {
@@ -93,11 +102,12 @@ class NodeEditor : JPanel() {
         }
     }
 
-    private fun getSlotLocation(slotBinding: SlotBinding): Point {
-        val slot = slotBinding.slot
-        val node = slotBinding.node
-        val positionX = if (slot.direction == Slot.Direction.INPUT) 0 else node.width - theme.slotSize
-        return Point(node.x + positionX + theme.slotSize / 2, node.y + slot.position + theme.slotSize / 2)
+    fun getSlotLocation(slot: Slot): Point {
+        return getNodeUIForSlot(slot).getSlotLocation(slot)
+    }
+
+    private fun getNodeUIForSlot(slot: Slot): NodeUI<*> {
+        return nodeModelToComponent[slot.node]!!
     }
 
     private fun onMouseDown(event: MouseEvent) {
@@ -105,7 +115,7 @@ class NodeEditor : JPanel() {
         val componentUnderCursor = SwingUtils.getComponentAt(this, localPoint)
 
         if (componentUnderCursor is SlotComponent) {
-            connectionHelper.beginConnection(componentUnderCursor)
+            connectionHelper.beginConnection(componentUnderCursor.slot)
         } else {
             val node = getNodeUnderCursor(localPoint, componentUnderCursor)
 
@@ -128,20 +138,12 @@ class NodeEditor : JPanel() {
         }
     }
 
-    private fun getNodeUnderCursor(cursor: Point, componentUnderCursor: Component): NodeUI? {
-        var node = getNodeUIAncestor(componentUnderCursor)
-        if (componentUnderCursor is NodeUI && !componentUnderCursor.getHitbox().contains(cursor)) {
-            node = null
-        }
-        return node
-    }
-
     private fun mouseUp(event: MouseEvent) {
         val localPoint = screenToLocal(event.locationOnScreen, this)
         val componentUnderCursor = SwingUtils.getComponentAt(this, localPoint)
 
         if (componentUnderCursor is SlotComponent) {
-            connectionHelper.endConnection(componentUnderCursor.slotBinding)
+            connectionHelper.endConnection(componentUnderCursor.slot)
         } else {
             connectionHelper.stop()
         }
@@ -159,7 +161,6 @@ class NodeEditor : JPanel() {
 
     private fun mouseDrag(event: MouseEvent) {
         val localPoint = screenToLocal(event.locationOnScreen, this)
-
         updateDrag(localPoint)
         connectionHelper.update(localPoint)
         marqueeSelection.update(localPoint)
@@ -168,6 +169,14 @@ class NodeEditor : JPanel() {
         }
 
         refresh()
+    }
+
+    private fun getNodeUnderCursor(cursor: Point, componentUnderCursor: Component): NodeUI<*>? {
+        var node = getNodeUIAncestor(componentUnderCursor)
+        if (componentUnderCursor is NodeUI<*> && !componentUnderCursor.getHitbox().contains(cursor)) {
+            node = null
+        }
+        return node
     }
 
     fun refresh() {
@@ -229,77 +238,6 @@ class NodeEditor : JPanel() {
             rectangle.setRect(0.0, 0.0, 0.0, 0.0)
             from.setLocation(0, 0)
             to.setLocation(0, 0)
-        }
-    }
-
-    private inner class ConnectionHelper {
-        var isConnecting = false
-            private set
-
-        private var from: SlotComponent? = null
-
-        private var to: SlotComponent? = null
-
-        var fromLocation: Point = Point()
-
-        var toLocation: Point = Point()
-
-        private var sourceSlotDirection: Slot.Direction? = null
-
-        fun beginConnection(slotComponent: SlotComponent) {
-            this.from = slotComponent
-            this.sourceSlotDirection = slotComponent.slot.direction
-            this.fromLocation.location = getSlotLocation(from!!.slotBinding)
-            this.toLocation.location = this.fromLocation
-            this.isConnecting = true
-        }
-
-        fun endConnection(to: SlotBinding) {
-            when (sourceSlotDirection) {
-                Slot.Direction.OUTPUT -> link(from!!.slotBinding, to)
-                Slot.Direction.INPUT -> link(to, from!!.slotBinding)
-            }
-            stop()
-        }
-
-        fun update(mouseLocation: Point) {
-            if (!isConnecting) {
-                return
-            }
-
-            val componentUnderCursor = SwingUtils.getComponentAt(this@NodeEditor, mouseLocation)
-            if (componentUnderCursor is SlotComponent && componentUnderCursor !== to) {
-                if (to != null) {
-                    to!!.state = NORMAL
-                }
-                to = componentUnderCursor
-                if (isValidEndPoint(componentUnderCursor)) {
-                    to!!.state = ACCEPT
-                } else {
-                    to!!.state = DECLINE
-                }
-            }
-
-            when (sourceSlotDirection) {
-                Slot.Direction.INPUT -> this.fromLocation = mouseLocation
-                Slot.Direction.OUTPUT -> this.toLocation = mouseLocation
-            }
-        }
-
-        private fun isValidEndPoint(endPoint: SlotComponent): Boolean {
-            return endPoint.slot.direction != sourceSlotDirection
-        }
-
-        fun stop() {
-            if (from != null) {
-                from!!.state = NORMAL
-            }
-            if (to != null) {
-                to!!.state = NORMAL
-            }
-            from = null
-            to = null
-            isConnecting = false
         }
     }
 

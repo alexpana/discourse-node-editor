@@ -1,8 +1,11 @@
 package com.manabreak.node_editor
 
-import javax.swing.*
-import java.awt.*
+import com.manabreak.node_editor.model.Node
+import com.manabreak.node_editor.model.Slot
+import java.awt.Color
+import java.awt.Dimension
 import java.awt.image.BufferedImage
+import javax.swing.JPanel
 
 interface NodeContent {
     val title: String
@@ -18,4 +21,8 @@ interface NodeContent {
     val slots: List<Slot>
 
     val preferredSize: Dimension
+
+    val node: Node
+
+    fun getSlotLocation(slot: Slot): Int
 }

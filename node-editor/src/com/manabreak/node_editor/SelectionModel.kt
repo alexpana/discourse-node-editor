@@ -1,12 +1,11 @@
 package com.manabreak.node_editor
 
-import com.manabreak.node_editor.NodeEditor
 import java.awt.Rectangle
 import java.util.*
 
 class SelectionModel constructor(private val editor: NodeEditor) {
 
-    val selectedNodes = ArrayList<NodeUI>()
+    val selectedNodes = ArrayList<NodeUI<*>>()
 
     fun clear() {
         clear(true)
@@ -23,11 +22,11 @@ class SelectionModel constructor(private val editor: NodeEditor) {
         }
     }
 
-    fun add(node: NodeUI) {
+    fun add(node: NodeUI<*>) {
         add(node, true)
     }
 
-    private fun add(node: NodeUI, refresh: Boolean) {
+    private fun add(node: NodeUI<*>, refresh: Boolean) {
         if (!node.selected) {
             node.selected = true
             selectedNodes.add(node)
@@ -37,7 +36,7 @@ class SelectionModel constructor(private val editor: NodeEditor) {
         }
     }
 
-    fun setSelection(vararg nodes: NodeUI) {
+    fun setSelection(vararg nodes: NodeUI<*>) {
         clear(false)
 
         for (node in nodes) {
@@ -47,7 +46,7 @@ class SelectionModel constructor(private val editor: NodeEditor) {
         editor.refresh()
     }
 
-    fun selectFromMarquee(selectionRectangle: Rectangle, nodes: List<NodeUI>) {
+    fun selectFromMarquee(selectionRectangle: Rectangle, nodes: List<NodeUI<*>>) {
         for (node in selectedNodes) {
             node.selected = false
         }
