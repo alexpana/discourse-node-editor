@@ -36,7 +36,7 @@ class ReplyChoiceNode : NodeContent {
 
     private val slotOffsets = HashMap<Slot, Int>()
 
-    val input = newSlot(INPUT, 13)
+    val input = newSlot(INPUT, 13, true)
     val firstOutput = newSlot(OUTPUT, 40)
     val secondOutput = newSlot(OUTPUT, 60)
 
@@ -51,8 +51,8 @@ class ReplyChoiceNode : NodeContent {
         content.add(JTextField())
     }
 
-    private fun newSlot(direction: Slot.Direction, verticalOffset: Int): Slot {
-        val slot = node.addSlot(direction)
+    private fun newSlot(direction: Slot.Direction, verticalOffset: Int, allowMultipleLink: Boolean = false): Slot {
+        val slot = node.addSlot(direction, allowMultipleLink)
         slotOffsets[slot] = verticalOffset
         return slot
     }

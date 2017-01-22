@@ -11,7 +11,7 @@ class SelectionModel constructor(private val editor: NodeEditor) {
         clear(true)
     }
 
-    private fun clear(refresh: Boolean) {
+    fun clear(refresh: Boolean) {
         for (selectedNode in selectedNodes) {
             selectedNode.selected = false
         }

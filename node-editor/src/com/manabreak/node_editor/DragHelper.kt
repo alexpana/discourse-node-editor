@@ -1,8 +1,9 @@
 package com.manabreak.node_editor
 
+import com.manabreak.node_editor.tools.Tool
 import java.awt.Point
 
-class DragHelper {
+class DragHelper(editor: NodeEditor) : Tool(editor) {
 
     var isDragging: Boolean = false
 

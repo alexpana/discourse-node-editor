@@ -38,8 +38,9 @@ object DiscourseLauncher {
         frame.setLocationRelativeTo(null)
 
         SwingUtilities.invokeLater {
-            nodeEditor.link(nodeA.content.firstOutput, nodeB.content.input)
-            nodeEditor.link(nodeA.content.secondOutput, nodeC.content.input)
+            nodeEditor.linkManager.link(nodeA.content.firstOutput, nodeB.content.input)
+            nodeEditor.linkManager.link(nodeA.content.secondOutput, nodeC.content.input)
+            nodeEditor.refresh()
         }
     }
 

@@ -13,7 +13,15 @@ internal object Renderer {
 
     val SELECTION_BORDER = Color(0x90FFB384.toInt(), true)
 
-    fun drawLink(g2d: Graphics2D, positionFrom: Point, positionTo: Point) {
+    fun drawLink(g: Graphics, from: Slot, to: Slot, position: (Slot) -> Point) {
+        if (from.direction == INPUT) {
+            drawLink(g, position(to), position(from))
+        } else {
+            drawLink(g, position(from), position(to))
+        }
+    }
+
+    fun drawLink(g: Graphics, positionFrom: Point, positionTo: Point) {
         val horizontalDistance = Math.abs(positionFrom.x - positionTo.x)
         val handleOffset = Math.max(horizontalDistance / 2, 20)
 
@@ -23,6 +31,7 @@ internal object Renderer {
                 (positionTo.x - handleOffset).toFloat(), positionTo.y.toFloat(),
                 positionTo.x.toFloat(), positionTo.y.toFloat())
 
+        val g2d = g as Graphics2D;
         g2d.color = theme.nodeBorderColor
         g2d.stroke = BasicStroke(5f)
         g2d.draw(cubicCurve2D)

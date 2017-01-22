@@ -1,10 +1,16 @@
 package com.manabreak.node_editor.tools
 
 import com.manabreak.node_editor.NodeEditor
+import com.manabreak.node_editor.Renderer.drawLink
 import com.manabreak.node_editor.SlotComponent
+import com.manabreak.node_editor.SwingUtils
 import com.manabreak.node_editor.SwingUtils.getComponentAt
 import com.manabreak.node_editor.model.Slot
+import com.manabreak.node_editor.model.Slot.Direction.INPUT
+import java.awt.Graphics
+import java.awt.Graphics2D
 import java.awt.Point
+import java.awt.event.MouseEvent
 
 class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
 
@@ -17,6 +23,36 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
     // Endpoints used for rendering the link
     val fromLocation = Point()
     val toLocation = Point()
+
+    override fun onMouseDown(event: MouseEvent) {
+        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
+        val componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint) as SlotComponent
+
+        beginConnection(componentUnderCursor.slot)
+    }
+
+    override fun onMouseDrag(event: MouseEvent) {
+        update(SwingUtils.screenToLocal(event.locationOnScreen, editor))
+    }
+
+    override fun onMouseUp(event: MouseEvent) {
+        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
+        val componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint)
+
+        if (componentUnderCursor is SlotComponent) {
+            endConnection(componentUnderCursor.slot)
+        } else {
+            stop()
+        }
+    }
+
+    override fun paintUnderNodes(g: Graphics) {
+        if (from!!.direction == INPUT) {
+            drawLink(g as Graphics2D, toLocation, fromLocation)
+        } else {
+            drawLink(g, fromLocation, toLocation)
+        }
+    }
 
     fun beginConnection(slot: Slot) {
 
