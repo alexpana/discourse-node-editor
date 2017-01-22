@@ -1,10 +1,10 @@
-package com.manabreak.node_editor.tools
+package com.manabreak.node_editor.ui.tools
 
-import com.manabreak.node_editor.NodeEditor
-import com.manabreak.node_editor.Renderer.drawLink
-import com.manabreak.node_editor.SlotComponent
-import com.manabreak.node_editor.SwingUtils
-import com.manabreak.node_editor.SwingUtils.getComponentAt
+import com.manabreak.node_editor.ui.NodeEditor
+import com.manabreak.node_editor.ui.Renderer.drawLink
+import com.manabreak.node_editor.ui.SlotComponent
+import com.manabreak.node_editor.ui.SwingUtils
+import com.manabreak.node_editor.ui.SwingUtils.getComponentAt
 import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.model.Slot.Direction.INPUT
 import java.awt.Graphics

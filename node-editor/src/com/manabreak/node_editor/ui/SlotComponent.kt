@@ -1,7 +1,7 @@
-package com.manabreak.node_editor
+package com.manabreak.node_editor.ui
 
-import com.manabreak.node_editor.Renderer.createSlotImage
-import com.manabreak.node_editor.Theme.Companion.theme
+import com.manabreak.node_editor.ui.Renderer.createSlotImage
+import com.manabreak.node_editor.ui.Theme.Companion.theme
 import com.manabreak.node_editor.model.Slot
 import java.awt.Graphics
 import java.awt.Graphics2D

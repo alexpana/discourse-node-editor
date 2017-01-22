@@ -1,4 +1,4 @@
-package com.manabreak.node_editor.icons
+package com.manabreak.node_editor.ui.icons
 
 
 /**

@@ -1,4 +1,4 @@
-package com.manabreak.node_editor.layout
+package com.manabreak.node_editor.ui.layout
 
 import java.awt.Component
 import java.awt.Container

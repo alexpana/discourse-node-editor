@@ -1,7 +1,7 @@
-package com.manabreak.node_editor
+package com.manabreak.node_editor.ui
 
-import com.manabreak.node_editor.Theme.Companion.theme
 import com.manabreak.node_editor.model.Slot
+import com.manabreak.node_editor.ui.Theme.Companion.theme
 import java.awt.*
 import java.util.*
 import javax.swing.JLayeredPane
@@ -15,7 +15,7 @@ class NodeUI<out T : NodeContent> constructor(val content: T) : JLayeredPane() {
 
     private val slotComponents = ArrayList<SlotComponent>()
 
-    private val header = Header(content)
+    private val header = Header()
 
     private val children = ArrayList<Component>()
 
@@ -84,7 +84,7 @@ class NodeUI<out T : NodeContent> constructor(val content: T) : JLayeredPane() {
         return Point(x + positionX + theme.slotSize / 2, y + content.getSlotLocation(slot) + theme.slotSize / 2)
     }
 
-    inner class Header internal constructor(nodeContent: NodeContent) : JPanel() {
+    inner class Header internal constructor() : JPanel() {
         init {
             layout = BorderLayout()
             isOpaque = false

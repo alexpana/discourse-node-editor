@@ -1,7 +1,6 @@
-package com.manabreak.node_editor
+package com.manabreak.node_editor.ui
 
 import com.manabreak.node_editor.model.Link
-import com.manabreak.node_editor.model.Node
 import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.model.Slot.Direction.INPUT
 import com.manabreak.node_editor.model.Slot.Direction.OUTPUT
@@ -13,18 +12,6 @@ import java.util.*
 class LinkManager {
 
     val links = ArrayList<Link>()
-
-    val nodes = ArrayList<Node>()
-
-    val slotToNode = HashMap<Slot, NodeUI<*>>()
-
-    fun addNode(node: Node) {
-        nodes.add(node)
-        // TODO
-    }
-
-    fun removeNode(node: Node) {
-    }
 
     fun link(from: Slot, to: Slot) {
         // TODO: check nodes are different

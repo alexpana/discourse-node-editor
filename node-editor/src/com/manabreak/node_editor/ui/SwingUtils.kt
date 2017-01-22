@@ -1,4 +1,4 @@
-package com.manabreak.node_editor
+package com.manabreak.node_editor.ui
 
 import javax.swing.*
 import java.awt.*
@@ -18,7 +18,7 @@ object SwingUtils {
         var ancestor: Component? = component
         while (ancestor != null) {
             if (ancestor is NodeUI<*>) {
-                return ancestor as NodeUI<*>?
+                return ancestor
             }
             ancestor = ancestor.parent
         }

@@ -1,7 +1,7 @@
 package com.manabreak.discourse.nodes
 
-import com.manabreak.node_editor.NodeContent
-import com.manabreak.node_editor.Theme
+import com.manabreak.node_editor.ui.NodeContent
+import com.manabreak.node_editor.ui.Theme
 import com.manabreak.node_editor.model.Node
 import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.model.Slot.Direction.INPUT

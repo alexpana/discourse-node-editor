@@ -1,6 +1,6 @@
-package com.manabreak.node_editor
+package com.manabreak.node_editor.ui
 
-import com.manabreak.node_editor.Theme.Companion.theme
+import com.manabreak.node_editor.ui.Theme.Companion.theme
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.Point
@@ -9,10 +9,12 @@ class Grid {
 
     val size = 30
 
+    @Suppress("unused")
     fun snap(point: Point): Point {
         return Point((point.getX() / size.toFloat()).toInt() * size, (point.getY() / size.toFloat()).toInt() * size)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun paint(g: Graphics, x: Int, y: Int, w: Int, h: Int) {
         val firstVisibleLine = 0
         val firstVisibleColumn = 0

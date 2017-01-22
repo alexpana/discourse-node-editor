@@ -1,4 +1,4 @@
-package com.manabreak.node_editor
+package com.manabreak.node_editor.ui
 
 import com.manabreak.node_editor.model.Node
 import com.manabreak.node_editor.model.Slot

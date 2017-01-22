@@ -1,7 +1,7 @@
 import com.bulenkov.darcula.DarculaLaf
 import com.manabreak.discourse.nodes.ReplyChoiceNode
-import com.manabreak.node_editor.NodeEditor
-import com.manabreak.node_editor.NodeUI
+import com.manabreak.node_editor.ui.NodeEditor
+import com.manabreak.node_editor.ui.NodeUI
 import java.awt.BorderLayout
 import java.awt.FontFormatException
 import java.io.IOException

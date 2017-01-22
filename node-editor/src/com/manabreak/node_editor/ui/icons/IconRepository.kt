@@ -1,7 +1,7 @@
-package com.manabreak.node_editor.icons
+package com.manabreak.node_editor.ui.icons
 
-import com.manabreak.node_editor.Theme.Companion.theme
-import com.manabreak.node_editor.icons.FontAwesomeGlyph.LIST
+import com.manabreak.node_editor.ui.Theme.Companion.theme
+import com.manabreak.node_editor.ui.icons.FontAwesomeGlyph.LIST
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints
@@ -11,6 +11,7 @@ import java.util.*
 import javax.swing.Icon
 import javax.swing.ImageIcon
 
+@Suppress("unused")
 object IconRepository {
 
     private val NODE_ICON_FONT_SIZE = 28.0f
@@ -41,13 +42,13 @@ object IconRepository {
     }
 
     fun newFontAwesomeIcon(glyph: FontAwesomeGlyph, iconSize: Int, glyphSize: Int, color: Color, offsetX: Int, offsetY: Int): BufferedImage {
-        val image = BufferedImage(NODE_ICON_SIZE, NODE_ICON_SIZE, TYPE_INT_ARGB)
+        val image = BufferedImage(iconSize, iconSize, TYPE_INT_ARGB)
         val g2d = image.graphics as Graphics2D
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-        val font = theme.fontAwesome.deriveFont(NODE_ICON_FONT_SIZE)
+        val font = theme.fontAwesome.deriveFont(glyphSize)
         g2d.font = font
-        g2d.color = theme.choiceNodeColor
-        g2d.drawString(LIST.representation, 6f, NODE_ICON_SIZE - 9f)
+        g2d.color = color
+        g2d.drawString(glyph.representation, offsetX, glyphSize + offsetY)
         return image
     }
 

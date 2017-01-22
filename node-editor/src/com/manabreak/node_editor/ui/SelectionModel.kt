@@ -1,4 +1,4 @@
-package com.manabreak.node_editor
+package com.manabreak.node_editor.ui
 
 import java.awt.Rectangle
 import java.util.*

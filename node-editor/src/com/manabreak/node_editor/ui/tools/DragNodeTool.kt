@@ -1,7 +1,7 @@
-package com.manabreak.node_editor.tools
+package com.manabreak.node_editor.ui.tools
 
-import com.manabreak.node_editor.NodeEditor
-import com.manabreak.node_editor.SwingUtils
+import com.manabreak.node_editor.ui.NodeEditor
+import com.manabreak.node_editor.ui.SwingUtils
 import java.awt.Point
 import java.awt.event.MouseEvent
 
