@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/discourse.iml" filepath="$PROJECT_DIR$/discourse.iml" />
+      <module fileurl="file://$PROJECT_DIR$/node-editor/node-editor.iml" filepath="$PROJECT_DIR$/node-editor/node-editor.iml" />
     </modules>
   </component>
 </project>
