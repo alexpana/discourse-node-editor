@@ -1,11 +1,10 @@
 package com.manabreak.discourse.nodes
 
-import com.manabreak.node_editor.ui.NodeContent
-import com.manabreak.node_editor.ui.Theme
 import com.manabreak.node_editor.model.Node
 import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.model.Slot.Direction.INPUT
 import com.manabreak.node_editor.model.Slot.Direction.OUTPUT
+import com.manabreak.node_editor.ui.Theme
 import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.image.BufferedImage
@@ -15,9 +14,7 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 
 
-class ReplyChoiceNode : NodeContent {
-
-    override val title = "Reply Choice"
+class ReplyChoiceNode : AbstractNode("Reply Choice") {
 
     override val color = Theme.theme.choiceNodeColor
 
@@ -34,27 +31,17 @@ class ReplyChoiceNode : NodeContent {
 
     override val node = Node("Reply Choice")
 
-    private val slotOffsets = HashMap<Slot, Int>()
-
     val input = newSlot(INPUT, 13, true)
+
     val firstOutput = newSlot(OUTPUT, 40)
+
     val secondOutput = newSlot(OUTPUT, 60)
 
     init {
-        slots.add(input)
-        slots.add(firstOutput)
-        slots.add(secondOutput)
-
         content.isOpaque = false
         content.layout = FlowLayout()
         content.add(JLabel("Choice: "))
         content.add(JTextField())
-    }
-
-    private fun newSlot(direction: Slot.Direction, verticalOffset: Int, allowMultipleLink: Boolean = false): Slot {
-        val slot = node.addSlot(direction, allowMultipleLink)
-        slotOffsets[slot] = verticalOffset
-        return slot
     }
 
     override fun getSlotLocation(slot: Slot): Int {

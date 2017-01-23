@@ -1,5 +1,6 @@
 import com.bulenkov.darcula.DarculaLaf
 import com.manabreak.discourse.nodes.ReplyChoiceNode
+import com.manabreak.discourse.nodes.SequenceNode
 import com.manabreak.node_editor.ui.NodeEditor
 import com.manabreak.node_editor.ui.NodeUI
 import java.awt.BorderLayout
@@ -32,6 +33,9 @@ object DiscourseLauncher {
 
         val nodeC = NodeUI(ReplyChoiceNode())
         nodeEditor.addNode(nodeC, 300, 200)
+
+        val nodeS = NodeUI(SequenceNode())
+        nodeEditor.addNode(nodeS, 500, 200)
 
         frame.contentPane.add(nodeEditor)
         frame.pack()

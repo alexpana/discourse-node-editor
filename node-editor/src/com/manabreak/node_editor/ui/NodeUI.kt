@@ -38,6 +38,7 @@ class NodeUI<out T : NodeContent> constructor(val content: T) : JLayeredPane() {
 
     override fun paintComponent(g: Graphics) {
         val inset = getInset()
+        val border = theme.nodeBorderWidth
 
         val g2d = g as Graphics2D
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
@@ -46,10 +47,10 @@ class NodeUI<out T : NodeContent> constructor(val content: T) : JLayeredPane() {
         g2d.fillRoundRect(inset, inset, width - 2 * inset, height - 2 * inset, 6, 6)
 
         g2d.color = theme.nodeSpecularColor
-        g2d.fillRoundRect(inset + 2, inset + 2, width - 2 * inset - 4, height - 2 * inset - 4, 4, 4)
+        g2d.fillRoundRect(inset + border, inset + border, width - 2 * (inset + border), height - 2 * (inset + border), 4, 4)
 
         g2d.color = theme.nodeBackgroundColor
-        g2d.fillRoundRect(inset + 2, inset + 3, width - 2 * inset - 4, height - 2 * inset - 5, 4, 4)
+        g2d.fillRoundRect(inset + border, inset + border + 1, width - 2 * (inset + border), height - 2 * (inset + border) - 1, 4, 4)
 
         val font = theme.boldFont
 
@@ -111,7 +112,7 @@ class NodeUI<out T : NodeContent> constructor(val content: T) : JLayeredPane() {
         }
 
         override fun layoutContainer(parent: Container) {
-            val inset = getInset()
+            val inset = getInset() + theme.nodeBorderWidth
             header.setBounds(inset, inset, width - 2 * inset, 20)
             content.content.setBounds(inset, inset + 20, width - 2 * inset, height - 2 * inset - 20)
             for (slotComponent in slotComponents) {

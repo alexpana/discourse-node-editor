@@ -13,6 +13,8 @@ class Theme private constructor() {
 
     val nodeBackgroundColor = Color(0x424548)
 
+    val nodeBorderWidth = 2
+
     val slotBorder = Color(0x333637)
 
     val slotDefaultColor = Color(0x64686C)
