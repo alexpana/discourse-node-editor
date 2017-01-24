@@ -6,6 +6,7 @@ import javafx.scene.Scene
 import javafx.scene.canvas.Canvas
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
+import javafx.scene.shape.CubicCurve
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.transform.Affine
@@ -82,19 +83,26 @@ object DiscourseFxLauncher {
                     c += 1
                 }
             }
+        }
 
-            links.forEach {
-                val from = (it.from.parent as Node).slotLocation(it.from)
-                val to = (it.to.parent as Node).slotLocation(it.to)
+        fun curve(from: Point2D, to: Point2D, width: Double, color: Color): CubicCurve {
+            val horizontalDistance = Math.abs(from.x - to.x)
+            val handleOffset = Math.max(horizontalDistance / 2, 20.0)
 
-                g2d.lineWidth = 5.0
-                g2d.stroke = Color.web("#333537")
-                g2d.strokeLine(from.x, from.y, to.x, to.y)
-
-                g2d.lineWidth = 1.0
-                g2d.stroke = Color.web("#90969C")
-                g2d.strokeLine(from.x, from.y, to.x, to.y)
-            }
+            val curve = CubicCurve()
+            curve.styleClass.add("link")
+            curve.startX = from.x
+            curve.startY = from.y
+            curve.controlX1 = from.x + handleOffset
+            curve.controlY1 = from.y
+            curve.controlX2 = to.x - handleOffset
+            curve.controlY2 = to.y
+            curve.endX = to.x
+            curve.endY = to.y
+            curve.strokeWidth = width
+            curve.stroke = color
+            curve.fill = Color.TRANSPARENT
+            return curve
         }
     }
 
@@ -151,6 +159,13 @@ object DiscourseFxLauncher {
             createNode(300.0, 50.0)
             createNode(320.0, 210.0)
             createNode(30.0, 250.0)
+
+            val from = nodes[0].slotLocation(nodes[0].slots[1])
+            val to = nodes[2].slotLocation(nodes[2].slots[0])
+            children.add(grid.curve(from, to, 5.0, Color.web("#333537")))
+            children.add(grid.curve(from, to, 1.0, Color.web("#90969C")))
+
+//            children.filter { it -> it is CubicCurve }.forEach{it -> it.z}
 
             grid.links.add(Link(nodes[0].slots[1], nodes[1].slots[0]))
             grid.links.add(Link(nodes[0].slots[2], nodes[3].slots[0]))

@@ -2,7 +2,6 @@ package com.manabreak.node_editor.ui.tools
 
 import com.manabreak.node_editor.ui.NodeEditor
 import com.manabreak.node_editor.ui.Renderer.drawSelection
-import com.manabreak.node_editor.ui.SwingUtils
 import java.awt.Graphics
 import java.awt.Point
 import java.awt.Rectangle
@@ -16,13 +15,13 @@ class MarqueeSelectionTool(editor: NodeEditor) : Tool(editor = editor) {
     val rectangle = Rectangle()
 
     override fun onMouseDown(event: MouseEvent) {
-        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-        beginSelection(localPoint)
+//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
+//        beginSelection(localPoint)
     }
 
     override fun onMouseDrag(event: MouseEvent) {
-        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-        update(localPoint)
+//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
+//        update(localPoint)
         editor.selection.selectFromMarquee(rectangle, editor.nodes)
     }
 

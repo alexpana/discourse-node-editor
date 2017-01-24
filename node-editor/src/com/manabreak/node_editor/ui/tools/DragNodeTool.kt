@@ -1,7 +1,6 @@
 package com.manabreak.node_editor.ui.tools
 
 import com.manabreak.node_editor.ui.NodeEditor
-import com.manabreak.node_editor.ui.SwingUtils
 import java.awt.Point
 import java.awt.event.MouseEvent
 
@@ -17,12 +16,12 @@ class DragNodeTool(editor: NodeEditor) : Tool(editor) {
     private val startLocation = Point()
 
     override fun onMouseDown(event: MouseEvent) {
-        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-        beginDrag(localPoint)
+//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
+//        beginDrag(localPoint)
     }
 
     override fun onMouseDrag(event: MouseEvent) {
-        updateDrag(SwingUtils.screenToLocal(event.locationOnScreen, editor))
+//        updateDrag(SwingUtils.screenToLocal(event.locationOnScreen, editor))
     }
 
     override fun onMouseUp(event: MouseEvent) {
@@ -50,9 +49,9 @@ class DragNodeTool(editor: NodeEditor) : Tool(editor) {
 
         val temp = Point()
         for (selectedNode in editor.selection.selectedNodes) {
-            selectedNode.getLocation(temp)
-            temp.translate(deltaMove.x, deltaMove.y)
-            selectedNode.location = temp
+//            selectedNode.getLocation(temp)
+//            temp.translate(deltaMove.x, deltaMove.y)
+//            selectedNode.location = temp
         }
     }
 }

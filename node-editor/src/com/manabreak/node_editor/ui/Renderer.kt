@@ -1,11 +1,10 @@
 package com.manabreak.node_editor.ui
 
-import com.manabreak.node_editor.ui.Theme.Companion.theme
 import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.model.Slot.Direction.INPUT
+import com.manabreak.node_editor.ui.Theme.Companion.theme
 import java.awt.*
 import java.awt.geom.CubicCurve2D
-import java.awt.image.BufferedImage
 
 internal object Renderer {
 
@@ -72,23 +71,5 @@ internal object Renderer {
 
     fun drawCircle(g2d: Graphics2D, x: Int, y: Int, size: Int) {
         g2d.fillRoundRect(x, y, size, size, size, size)
-    }
-
-
-    fun createSlotImage(border: Color, innerColor: Color, borderSize: Int): BufferedImage {
-        val size = theme.slotSize
-
-        val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
-
-        val g2d = image.graphics as Graphics2D
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-
-        g2d.color = border
-        drawCircle(g2d, 0, 0, size)
-
-        g2d.color = innerColor
-        drawCircle(g2d, borderSize, borderSize, size - 2 * borderSize)
-
-        return image
     }
 }

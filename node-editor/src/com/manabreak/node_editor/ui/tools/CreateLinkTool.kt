@@ -1,12 +1,10 @@
 package com.manabreak.node_editor.ui.tools
 
+import com.manabreak.node_editor.model.Slot
+import com.manabreak.node_editor.model.Slot.Direction.INPUT
 import com.manabreak.node_editor.ui.NodeEditor
 import com.manabreak.node_editor.ui.Renderer.drawLink
 import com.manabreak.node_editor.ui.SlotComponent
-import com.manabreak.node_editor.ui.SwingUtils
-import com.manabreak.node_editor.ui.SwingUtils.getComponentAt
-import com.manabreak.node_editor.model.Slot
-import com.manabreak.node_editor.model.Slot.Direction.INPUT
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.Point
@@ -25,25 +23,25 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
     val toLocation = Point()
 
     override fun onMouseDown(event: MouseEvent) {
-        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-        val componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint) as SlotComponent
-
-        beginConnection(componentUnderCursor.slot)
+//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
+//        val componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint) as SlotComponent
+//
+//        beginConnection(componentUnderCursor.slot)
     }
 
     override fun onMouseDrag(event: MouseEvent) {
-        update(SwingUtils.screenToLocal(event.locationOnScreen, editor))
+//        update(SwingUtils.screenToLocal(event.locationOnScreen, editor))
     }
 
     override fun onMouseUp(event: MouseEvent) {
-        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-        val componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint)
-
-        if (componentUnderCursor is SlotComponent) {
-            endConnection(componentUnderCursor.slot)
-        } else {
-            stop()
-        }
+//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
+//        val componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint)
+//
+//        if (componentUnderCursor is SlotComponent) {
+//            endConnection(componentUnderCursor.slot)
+//        } else {
+//            stop()
+//        }
     }
 
     override fun paintUnderNodes(g: Graphics) {
@@ -57,18 +55,18 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
     fun beginConnection(slot: Slot) {
 
         // unlink existing link from output (outputs can only link to one)
-        if (!slot.allowsMultipleLinks && editor.linkManager.isLinked(slot)) {
-            val link = editor.linkManager.findLink(slot)!!
-            editor.linkManager.unlink(link)
-            from = link.other(slot)
-        } else {
-            from = slot
-        }
-
-        fromLocation.location = editor.getSlotLocation(from!!)
-        toLocation.location = this.fromLocation
-
-        this.isConnecting = true
+//        if (!slot.allowsMultipleLinks && editor.linkManager.isLinked(slot)) {
+//            val link = editor.linkManager.findLink(slot)!!
+//            editor.linkManager.unlink(link)
+//            from = link.other(slot)
+//        } else {
+//            from = slot
+//        }
+//
+//        fromLocation.location = editor.getSlotLocation(from!!)
+//        toLocation.location = this.fromLocation
+//
+//        this.isConnecting = true
     }
 
     fun endConnection(to: Slot) {
@@ -83,26 +81,26 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
             return
         }
 
-        val componentUnderCursor = getComponentAt(editor, mouseLocation)
-
-        // hover out
-        if (componentUnderCursor !is SlotComponent) {
-            hoveredComponent?.state = SlotComponent.State.NORMAL
-            hoveredComponent = null
-        }
-
-        if (componentUnderCursor is SlotComponent && componentUnderCursor !== hoveredComponent && componentUnderCursor.slot != from) {
-            hoveredComponent = componentUnderCursor
-            hoveredComponent?.state = if (editor.linkManager.canLink(from!!, componentUnderCursor.slot)) SlotComponent.State.ACCEPT else SlotComponent.State.DECLINE
-        }
-
-        toLocation.location = mouseLocation
+//        val componentUnderCursor = getComponentAt(editor, mouseLocation)
+//
+//        // hover out
+//        if (componentUnderCursor !is SlotComponent) {
+//            hoveredComponent?.state = SlotComponent.State.NORMAL
+//            hoveredComponent = null
+//        }
+//
+//        if (componentUnderCursor is SlotComponent && componentUnderCursor !== hoveredComponent && componentUnderCursor.slot != from) {
+//            hoveredComponent = componentUnderCursor
+//            hoveredComponent?.state = if (editor.linkManager.canLink(from!!, componentUnderCursor.slot)) SlotComponent.State.ACCEPT else SlotComponent.State.DECLINE
+//        }
+//
+//        toLocation.location = mouseLocation
     }
 
     fun stop() {
-        isConnecting = false
-        hoveredComponent?.state = SlotComponent.State.NORMAL
-        hoveredComponent = null
-        from = null
+//        isConnecting = false
+//        hoveredComponent?.state = SlotComponent.State.NORMAL
+//        hoveredComponent = null
+//        from = null
     }
 }

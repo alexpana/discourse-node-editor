@@ -31,7 +31,7 @@ class Theme private constructor() {
 
     val marqueeSelectColor = Color(0x90969C)
 
-    val slotSize = 11
+    val slotSize = 12.0
 
     val slotBorderWidth = 2
 

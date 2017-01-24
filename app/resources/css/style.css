@@ -4,18 +4,25 @@
 
 .node {
     -fx-background-color: #333537, #4C4F52, #424548;
-    -fx-background-insets: 0, 2, 3 2 2 2;
+    -fx-background-insets: 0 5, 2 7, 3 7 2 7;
     -fx-background-radius: 4;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10.0, 0.3, 0, 0)
 }
 
-.node.choice .title {
+.node .header {
+    -fx-background-color: rgba(10, 10, 10, 0.05);
+    -fx-background-insets: 2 7 0 7;
+    -fx-background-radius: 4 4 0 0;
+}
+
+.node .header .title {
     -fx-font-family: "Open Sans Extrabold";
     -fx-fill: #738495;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 0.0, 1.0, 0, 1.0);
 }
 
 .slot {
-    -fx-background-color: #333637, #64686C;
-    -fx-background-insets: 0, 3;
+    -fx-background-color: #333637, #5b5e62;
+    -fx-background-insets: 0, 2;
     -fx-background-radius: 7;
 }
