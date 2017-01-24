@@ -1,0 +1,21 @@
+.editor {
+    -fx-background-color: #3c3f41;
+}
+
+.node {
+    -fx-background-color: #333537, #4C4F52, #424548;
+    -fx-background-insets: 0, 2, 3 2 2 2;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10.0, 0.3, 0, 0)
+}
+
+.node.choice .title {
+    -fx-font-family: "Open Sans Extrabold";
+    -fx-fill: #738495;
+}
+
+.slot {
+    -fx-background-color: #333637, #64686C;
+    -fx-background-insets: 0, 3;
+    -fx-background-radius: 7;
+}

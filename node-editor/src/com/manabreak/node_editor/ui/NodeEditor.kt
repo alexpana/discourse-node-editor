@@ -1,13 +1,13 @@
 package com.manabreak.node_editor.ui
 
+import com.manabreak.node_editor.model.Node
+import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.ui.Renderer.drawLink
 import com.manabreak.node_editor.ui.Renderer.drawNodeHighlight
 import com.manabreak.node_editor.ui.SwingUtils.expand
 import com.manabreak.node_editor.ui.SwingUtils.isInputTransparent
 import com.manabreak.node_editor.ui.SwingUtils.screenToLocal
 import com.manabreak.node_editor.ui.layout.AbsoluteLayoutManager
-import com.manabreak.node_editor.model.Node
-import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.ui.tools.CreateLinkTool
 import com.manabreak.node_editor.ui.tools.DragNodeTool
 import com.manabreak.node_editor.ui.tools.MarqueeSelectionTool
@@ -83,7 +83,7 @@ class NodeEditor : JPanel() {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
 
         // draw grid
-        grid.paint(g, 0, 0, width, height)
+//        grid.paint(g, 0, 0, width, height)
 
         // draw links
         for ((from, to) in linkManager.links) {
