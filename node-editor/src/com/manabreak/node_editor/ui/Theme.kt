@@ -7,7 +7,7 @@ import java.io.IOException
 
 class Theme private constructor() {
 
-    val nodeBorderColor = Color(0x333537)
+    val nodeBorderColor = javafx.scene.paint.Color.web("#333537")
 
     val nodeSpecularColor = Color(0x4C4F52)
 
@@ -23,7 +23,7 @@ class Theme private constructor() {
 
     val slotDeclineColor = Color(0xA4555A)
 
-    val linkColor = Color(0x90969C)
+    val linkColor = javafx.scene.paint.Color.web("#90969C")
 
     val gridColor = Color(0x424548)
 

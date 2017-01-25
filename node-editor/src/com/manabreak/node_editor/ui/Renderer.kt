@@ -4,7 +4,6 @@ import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.model.Slot.Direction.INPUT
 import com.manabreak.node_editor.ui.Theme.Companion.theme
 import java.awt.*
-import java.awt.geom.CubicCurve2D
 
 internal object Renderer {
 
@@ -21,23 +20,23 @@ internal object Renderer {
     }
 
     fun drawLink(g: Graphics, positionFrom: Point, positionTo: Point) {
-        val horizontalDistance = Math.abs(positionFrom.x - positionTo.x)
-        val handleOffset = Math.max(horizontalDistance / 2, 20)
-
-        val cubicCurve2D = CubicCurve2D.Float(
-                positionFrom.x.toFloat(), positionFrom.y.toFloat(),
-                (positionFrom.x + handleOffset).toFloat(), positionFrom.y.toFloat(),
-                (positionTo.x - handleOffset).toFloat(), positionTo.y.toFloat(),
-                positionTo.x.toFloat(), positionTo.y.toFloat())
-
-        val g2d = g as Graphics2D;
-        g2d.color = theme.nodeBorderColor
-        g2d.stroke = BasicStroke(5f)
-        g2d.draw(cubicCurve2D)
-
-        g2d.color = theme.linkColor
-        g2d.stroke = BasicStroke(1.5f)
-        g2d.draw(cubicCurve2D)
+//        val horizontalDistance = Math.abs(positionFrom.x - positionTo.x)
+//        val handleOffset = Math.max(horizontalDistance / 2, 20)
+//
+//        val cubicCurve2D = CubicCurve2D.Float(
+//                positionFrom.x.toFloat(), positionFrom.y.toFloat(),
+//                (positionFrom.x + handleOffset).toFloat(), positionFrom.y.toFloat(),
+//                (positionTo.x - handleOffset).toFloat(), positionTo.y.toFloat(),
+//                positionTo.x.toFloat(), positionTo.y.toFloat())
+//
+//        val g2d = g as Graphics2D;
+//        g2d.color = theme.nodeBorderColor
+//        g2d.stroke = BasicStroke(5f)
+//        g2d.draw(cubicCurve2D)
+//
+//        g2d.color = theme.linkColor
+//        g2d.stroke = BasicStroke(1.5f)
+//        g2d.draw(cubicCurve2D)
     }
 
     fun drawSelection(g: Graphics, rectangle: Rectangle) {

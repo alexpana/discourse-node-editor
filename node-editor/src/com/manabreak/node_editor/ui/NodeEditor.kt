@@ -1,5 +1,6 @@
 package com.manabreak.node_editor.ui
 
+import com.manabreak.node_editor.model.Link
 import com.manabreak.node_editor.model.Node
 import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.ui.tools.CreateLinkTool
@@ -17,7 +18,7 @@ import java.awt.event.AWTEventListener
 import java.awt.event.MouseEvent
 import java.util.*
 
-class NodeEditor : Pane() {
+class NodeEditor : Pane(), LinkManager.Listener {
 
     val nodes = ArrayList<NodeUI<*>>()
 
@@ -39,8 +40,27 @@ class NodeEditor : Pane() {
 
     val linkManager = LinkManager()
 
+    val backgroundPane = Pane()
+
+    val linkComponents = HashMap<Link, LinkComponent>()
+
     init {
         styleClass.add("editor")
+        children.add(backgroundPane)
+        linkManager.listeners.add(this)
+    }
+
+    override fun linkCreated(link: Link) {
+        val linkComponent = LinkComponent(this, link)
+        linkComponents[link] = linkComponent
+        backgroundPane.children.add(linkComponent.backgroundCurve)
+        backgroundPane.children.add(linkComponent.foregroundCurve)
+    }
+
+    override fun linkRemoved(link: Link) {
+        backgroundPane.children.remove(linkComponents[link]?.backgroundCurve)
+        backgroundPane.children.remove(linkComponents[link]?.foregroundCurve)
+        linkComponents.remove(link)
     }
 
     fun addNode(nodeUI: NodeUI<*>, x: Double, y: Double) {

@@ -13,13 +13,17 @@ class LinkManager {
 
     val links = ArrayList<Link>()
 
+    val listeners = ArrayList<Listener>()
+
     fun link(from: Slot, to: Slot) {
         // TODO: check nodes are different
         // TODO: check directions are correct
         // TODO: check link doesn't already exist
 
         if (canLink(from, to)) {
-            links.add(newLink(from, to))
+            val link = newLink(from, to)
+            links.add(link)
+            notifyLinkCreated(link)
         } else {
             throw RuntimeException("Cannot link: $from to $to")
         }
@@ -46,6 +50,7 @@ class LinkManager {
 
     fun unlink(link: Link) {
         links.remove(link)
+        notifyLinkRemoved(link)
     }
 
     fun isLinked(slot: Slot): Boolean {
@@ -58,6 +63,20 @@ class LinkManager {
 
     fun findLinks(slot: Slot): List<Link> {
         return links.filter { it.from == slot }
+    }
+
+    private fun notifyLinkCreated(link: Link) {
+        listeners.forEach { it.linkCreated(link) }
+    }
+
+    private fun notifyLinkRemoved(link: Link) {
+        listeners.forEach { it.linkRemoved(link) }
+    }
+
+    interface Listener {
+        fun linkCreated(link: Link)
+
+        fun linkRemoved(link: Link)
     }
 }
 
