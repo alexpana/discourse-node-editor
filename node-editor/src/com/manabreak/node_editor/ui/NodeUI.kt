@@ -2,19 +2,28 @@ package com.manabreak.node_editor.ui
 
 import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.ui.Theme.Companion.theme
-import javafx.event.EventHandler
 import javafx.geometry.Point2D
 import javafx.geometry.Rectangle2D
-import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Region
 import javafx.scene.text.Text
-import java.awt.Rectangle
 import java.util.*
 
 class NodeUI<out T : NodeContent> constructor(val content: T) : Pane() {
 
-    var selected = false
+    private var _selected = false
+    var selected: Boolean
+        get() = _selected
+        set(value) {
+            if (value != _selected) {
+                if (value) {
+                    styleClass.add("selected")
+                } else {
+                    styleClass.remove("selected")
+                }
+            }
+            _selected = value
+        }
 
     val model = content.node
 

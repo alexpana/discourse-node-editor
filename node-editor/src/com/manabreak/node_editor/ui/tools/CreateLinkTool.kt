@@ -1,8 +1,10 @@
 package com.manabreak.node_editor.ui.tools
 
 import com.manabreak.node_editor.model.Slot
+import com.manabreak.node_editor.ui.CubicCurveLink
 import com.manabreak.node_editor.ui.NodeEditor
 import com.manabreak.node_editor.ui.SlotComponent
+import javafx.event.EventTarget
 import javafx.geometry.Point2D
 import javafx.scene.input.MouseEvent
 
@@ -15,54 +17,50 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
     var hoveredComponent: SlotComponent? = null
 
     // Endpoints used for rendering the link
-    val fromLocation = Point2D.ZERO
-    val toLocation = Point2D.ZERO
+    var fromLocation = Point2D.ZERO
+    var toLocation = Point2D.ZERO
+
+    val interactiveLink = CubicCurveLink()
 
     override fun onMouseDown(event: MouseEvent) {
-//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-//        val componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint) as SlotComponent
-//
-//        beginConnection(componentUnderCursor.slot)
+        val componentUnderCursor = event.target as SlotComponent
+
+        beginConnection(componentUnderCursor.slot)
     }
 
     override fun onMouseDrag(event: MouseEvent) {
-//        update(SwingUtils.screenToLocal(event.locationOnScreen, editor))
+        update(event.target, event.x, event.y)
     }
 
     override fun onMouseUp(event: MouseEvent) {
-//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-//        val componentUnderCursor = SwingUtils.getComponentAt(editor, localPoint)
-//
-//        if (componentUnderCursor is SlotComponent) {
-//            endConnection(componentUnderCursor.slot)
-//        } else {
-//            stop()
-//        }
+        val componentUnderCursor = event.target
+
+        if (componentUnderCursor is SlotComponent) {
+            endConnection(componentUnderCursor.slot)
+        } else {
+            stop()
+        }
     }
 
-//    override fun paintUnderNodes(g: Graphics) {
-//        if (from!!.direction == INPUT) {
-//            drawLink(g as Graphics2D, toLocation, fromLocation)
-//        } else {
-//            drawLink(g, fromLocation, toLocation)
-//        }
-//    }
-
     fun beginConnection(slot: Slot) {
-
         // unlink existing link from output (outputs can only link to one)
-//        if (!slot.allowsMultipleLinks && editor.linkManager.isLinked(slot)) {
-//            val link = editor.linkManager.findLink(slot)!!
-//            editor.linkManager.unlink(link)
-//            from = link.other(slot)
-//        } else {
-//            from = slot
-//        }
-//
-//        fromLocation.location = editor.getSlotLocation(from!!)
-//        toLocation.location = this.fromLocation
-//
-//        this.isConnecting = true
+        if (!slot.allowsMultipleLinks && editor.linkManager.isLinked(slot)) {
+            val link = editor.linkManager.findLink(slot)!!
+            editor.linkManager.unlink(link)
+            from = link.other(slot)
+        } else {
+            from = slot
+        }
+
+        editor.backgroundPane.children.add(interactiveLink.backgroundCurve)
+        editor.backgroundPane.children.add(interactiveLink.foregroundCurve)
+
+        fromLocation = editor.getSlotLocation(from!!)
+        toLocation = this.fromLocation
+
+        interactiveLink.update(fromLocation, toLocation)
+
+        this.isConnecting = true
     }
 
     fun endConnection(to: Slot) {
@@ -72,31 +70,28 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
         stop()
     }
 
-    fun update(mouseLocation: Point2D) {
-        if (!isConnecting) {
-            return
+    fun update(target: EventTarget?, x: Double, y: Double) {
+        // hover out
+        if (target !is SlotComponent) {
+            hoveredComponent?.state = SlotComponent.State.NORMAL
+            hoveredComponent = null
         }
 
-//        val componentUnderCursor = getComponentAt(editor, mouseLocation)
-//
-//        // hover out
-//        if (componentUnderCursor !is SlotComponent) {
-//            hoveredComponent?.state = SlotComponent.State.NORMAL
-//            hoveredComponent = null
-//        }
-//
-//        if (componentUnderCursor is SlotComponent && componentUnderCursor !== hoveredComponent && componentUnderCursor.slot != from) {
-//            hoveredComponent = componentUnderCursor
-//            hoveredComponent?.state = if (editor.linkManager.canLink(from!!, componentUnderCursor.slot)) SlotComponent.State.ACCEPT else SlotComponent.State.DECLINE
-//        }
-//
-//        toLocation.location = mouseLocation
+        if (target is SlotComponent && target !== hoveredComponent && target.slot != from) {
+            hoveredComponent = target
+            hoveredComponent?.state = if (editor.linkManager.canLink(from!!, target.slot)) SlotComponent.State.ACCEPT else SlotComponent.State.DECLINE
+        }
+
+        toLocation = Point2D(x, y)
+        interactiveLink.update(fromLocation, toLocation)
     }
 
     fun stop() {
-//        isConnecting = false
-//        hoveredComponent?.state = SlotComponent.State.NORMAL
-//        hoveredComponent = null
-//        from = null
+        editor.backgroundPane.children.remove(interactiveLink.backgroundCurve)
+        editor.backgroundPane.children.remove(interactiveLink.foregroundCurve)
+        isConnecting = false
+        hoveredComponent?.state = SlotComponent.State.NORMAL
+        hoveredComponent = null
+        from = null
     }
 }

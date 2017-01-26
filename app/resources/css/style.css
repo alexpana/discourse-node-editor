@@ -9,6 +9,12 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10.0, 0.3, 0, 0)
 }
 
+.node.selected {
+    -fx-background-color: #737a80, #4C4F52, #424548;
+    -fx-background-insets: 0 5, 2 7, 3 7 2 7;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10.0, 0.3, 0, 0)
+}
+
 .node .header {
     -fx-background-color: rgba(10, 10, 10, 0.05);
     -fx-background-insets: 2 7 0 7;

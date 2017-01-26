@@ -47,10 +47,14 @@ class NodeEditor : Pane(), LinkManager.Listener {
 
     init {
         foregroundCanvas.graphicsContext2D.translate(0.5, 0.5)
+//        foregroundCanvas.isPickOnBounds = false
+        foregroundCanvas.isMouseTransparent = true
+        foregroundPane.isMouseTransparent = true
 
         onMousePressed = EventHandler<MouseEvent> { mouseDown(it) }
         onMouseReleased = EventHandler<MouseEvent> { mouseUp(it) }
         onMouseDragged = EventHandler<MouseEvent> { mouseDrag(it) }
+        onMouseClicked = EventHandler<MouseEvent> { mouseClicked(it) }
 
         styleClass.add("editor")
         linkManager.listeners.add(this)
@@ -135,6 +139,13 @@ class NodeEditor : Pane(), LinkManager.Listener {
     private fun mouseDrag(event: MouseEvent) {
         activeTool?.onMouseDrag(event)
         refresh()
+    }
+
+    private fun mouseClicked(event: MouseEvent) {
+        val nodeUI = getNodeUIUnderCursor(Point2D(event.x, event.y))
+        if (nodeUI?.selected ?: false) {
+            selection.setSelection(nodeUI!!)
+        }
     }
 
     override fun layoutChildren() {
