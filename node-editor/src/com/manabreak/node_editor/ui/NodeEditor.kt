@@ -9,9 +9,9 @@ import com.manabreak.node_editor.ui.tools.MarqueeSelectionTool
 import com.manabreak.node_editor.ui.tools.Tool
 import javafx.event.EventHandler
 import javafx.geometry.Point2D
+import javafx.scene.canvas.Canvas
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
-import java.awt.Graphics
 import java.awt.Rectangle
 import java.util.*
 
@@ -39,17 +39,28 @@ class NodeEditor : Pane(), LinkManager.Listener {
 
     val backgroundPane = Pane()
 
+    val foregroundPane = Pane()
+
+    val foregroundCanvas = Canvas()
+
     val linkComponents = HashMap<Link, LinkComponent>()
 
     init {
+        foregroundCanvas.graphicsContext2D.translate(0.5, 0.5)
 
         onMousePressed = EventHandler<MouseEvent> { mouseDown(it) }
         onMouseReleased = EventHandler<MouseEvent> { mouseUp(it) }
         onMouseDragged = EventHandler<MouseEvent> { mouseDrag(it) }
 
         styleClass.add("editor")
-        children.add(backgroundPane)
         linkManager.listeners.add(this)
+
+        foregroundPane.translateZ = -10.0
+        foregroundPane.children.add(foregroundCanvas)
+
+        backgroundPane.translateZ = 0.0
+        children.add(backgroundPane)
+        children.add(foregroundPane)
     }
 
     override fun linkCreated(link: Link) {
@@ -66,7 +77,8 @@ class NodeEditor : Pane(), LinkManager.Listener {
     }
 
     fun addNode(nodeUI: NodeUI<*>, x: Double, y: Double) {
-        children.add(nodeUI)
+        nodeUI.translateZ = 1.0
+        children.add(1, nodeUI)
         nodes.add(nodeUI)
         nodeModelToComponent[nodeUI.model] = nodeUI
         nodeUI.resizeRelocate(x, y, nodeUI.prefWidth, nodeUI.prefHeight)
@@ -82,10 +94,6 @@ class NodeEditor : Pane(), LinkManager.Listener {
 
     fun getNodeUIUnderCursor(cursor: Point2D): NodeUI<*>? {
         return nodes.find { it.getHitbox().contains(cursor) }
-    }
-
-    private fun paintOverNodes(g: Graphics) {
-        activeTool?.paintOverNodes(g)
     }
 
     private fun mouseDown(event: MouseEvent) {
@@ -127,6 +135,15 @@ class NodeEditor : Pane(), LinkManager.Listener {
     private fun mouseDrag(event: MouseEvent) {
         activeTool?.onMouseDrag(event)
         refresh()
+    }
+
+    override fun layoutChildren() {
+        backgroundPane.resizeRelocate(0.0, 0.0, boundsInLocal.width, boundsInLocal.height)
+        foregroundPane.resizeRelocate(0.0, 0.0, boundsInLocal.width, boundsInLocal.height)
+        foregroundCanvas.layoutX = 0.0
+        foregroundCanvas.layoutY = 0.0
+        foregroundCanvas.width = boundsInLocal.width
+        foregroundCanvas.height = boundsInLocal.height
     }
 
     fun refresh() {

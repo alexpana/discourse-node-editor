@@ -4,7 +4,7 @@ import com.manabreak.node_editor.ui.NodeEditor
 import javafx.geometry.Point2D
 import javafx.geometry.Rectangle2D
 import javafx.scene.input.MouseEvent
-import java.awt.Graphics
+import javafx.scene.paint.Color
 
 class MarqueeSelectionTool(editor: NodeEditor) : Tool(editor = editor) {
     var from = Point2D(0.0, 0.0)
@@ -37,15 +37,20 @@ class MarqueeSelectionTool(editor: NodeEditor) : Tool(editor = editor) {
         val width = Math.abs(to.x - from.x)
         val height = Math.abs(to.y - from.y)
         rectangle = Rectangle2D(x, y, width, height)
+        val g2d = editor.foregroundCanvas.graphicsContext2D
+        g2d.clearRect(0.0, 0.0, editor.foregroundCanvas.width, editor.foregroundCanvas.height)
+        g2d.fill = Color.web("#ffffff", 0.1)
+        g2d.fillRect(x, y, width, height)
+        g2d.stroke = Color.web("#ffffff", 0.5)
+        g2d.setLineDashes(4.0, 4.0)
+        g2d.strokeRect(x, y, width, height)
     }
 
     fun finishSelection() {
+        val g2d = editor.foregroundCanvas.graphicsContext2D
+        g2d.clearRect(0.0, 0.0, editor.foregroundCanvas.width, editor.foregroundCanvas.height)
         rectangle = Rectangle2D.EMPTY
         from = Point2D.ZERO
         to = Point2D.ZERO
-    }
-
-    override fun paintOverNodes(g: Graphics) {
-//        drawSelection(g, rectangle)
     }
 }
