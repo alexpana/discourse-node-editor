@@ -1,6 +1,6 @@
 package com.manabreak.node_editor.ui
 
-import java.awt.Rectangle
+import javafx.geometry.Rectangle2D
 import java.util.*
 
 class SelectionModel constructor(private val editor: NodeEditor) {
@@ -46,14 +46,14 @@ class SelectionModel constructor(private val editor: NodeEditor) {
         editor.refresh()
     }
 
-    fun selectFromMarquee(selectionRectangle: Rectangle, nodes: List<NodeUI<*>>) {
+    fun selectFromMarquee(selectionRectangle: Rectangle2D, nodes: List<NodeUI<*>>) {
         for (node in selectedNodes) {
             node.selected = false
         }
         selectedNodes.clear()
 
         for (node in nodes) {
-            if (selectionRectangle.contains(node.getHitbox())) {
+            if (selectionRectangle.contains(node.layoutX, node.layoutY, node.width, node.height)) {
                 selectedNodes.add(node)
                 node.selected = true
             }

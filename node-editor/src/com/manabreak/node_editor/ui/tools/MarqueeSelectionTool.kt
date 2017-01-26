@@ -1,27 +1,24 @@
 package com.manabreak.node_editor.ui.tools
 
 import com.manabreak.node_editor.ui.NodeEditor
-import com.manabreak.node_editor.ui.Renderer.drawSelection
+import javafx.geometry.Point2D
+import javafx.geometry.Rectangle2D
+import javafx.scene.input.MouseEvent
 import java.awt.Graphics
-import java.awt.Point
-import java.awt.Rectangle
-import java.awt.event.MouseEvent
 
 class MarqueeSelectionTool(editor: NodeEditor) : Tool(editor = editor) {
-    val from = Point()
+    var from = Point2D(0.0, 0.0)
 
-    val to = Point()
+    var to = Point2D(0.0, 0.0)
 
-    val rectangle = Rectangle()
+    var rectangle = Rectangle2D.EMPTY
 
     override fun onMouseDown(event: MouseEvent) {
-//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-//        beginSelection(localPoint)
+        beginSelection(Point2D(event.x, event.y))
     }
 
     override fun onMouseDrag(event: MouseEvent) {
-//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-//        update(localPoint)
+        update(Point2D(event.x, event.y))
         editor.selection.selectFromMarquee(rectangle, editor.nodes)
     }
 
@@ -29,26 +26,26 @@ class MarqueeSelectionTool(editor: NodeEditor) : Tool(editor = editor) {
         finishSelection()
     }
 
-    fun beginSelection(from: Point) {
-        this.from.location = from
+    fun beginSelection(from: Point2D) {
+        this.from = from
     }
 
-    fun update(update: Point) {
-        to.location = update
+    fun update(update: Point2D) {
+        to = update
         val x = Math.min(from.x, to.x)
         val y = Math.min(from.y, to.y)
         val width = Math.abs(to.x - from.x)
         val height = Math.abs(to.y - from.y)
-        rectangle.setBounds(x, y, width, height)
+        rectangle = Rectangle2D(x, y, width, height)
     }
 
     fun finishSelection() {
-        rectangle.setRect(0.0, 0.0, 0.0, 0.0)
-        from.setLocation(0, 0)
-        to.setLocation(0, 0)
+        rectangle = Rectangle2D.EMPTY
+        from = Point2D.ZERO
+        to = Point2D.ZERO
     }
 
     override fun paintOverNodes(g: Graphics) {
-        drawSelection(g, rectangle)
+//        drawSelection(g, rectangle)
     }
 }

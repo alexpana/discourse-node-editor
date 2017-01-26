@@ -1,8 +1,8 @@
 package com.manabreak.node_editor.ui.tools
 
 import com.manabreak.node_editor.ui.NodeEditor
+import javafx.scene.input.MouseEvent
 import java.awt.Graphics
-import java.awt.event.MouseEvent
 
 abstract class Tool(val editor: NodeEditor) {
 

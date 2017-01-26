@@ -2,7 +2,10 @@ package com.manabreak.node_editor.ui
 
 import com.manabreak.node_editor.model.Slot
 import com.manabreak.node_editor.ui.Theme.Companion.theme
+import javafx.event.EventHandler
 import javafx.geometry.Point2D
+import javafx.geometry.Rectangle2D
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Region
 import javafx.scene.text.Text
@@ -39,13 +42,8 @@ class NodeUI<out T : NodeContent> constructor(val content: T) : Pane() {
         return content.slots[index]
     }
 
-    fun getHitbox(): Rectangle {
-        return getHitbox(Rectangle())
-    }
-
-    fun getHitbox(rv: Rectangle): Rectangle {
-        rv.setRect((layoutX + getInset()), (layoutY + getInset()), (width - 2 * getInset()), (height - 2 * getInset()))
-        return rv
+    fun getHitbox(): Rectangle2D {
+        return Rectangle2D((layoutX + getInset()), (layoutY + getInset()), (width - 2 * getInset()), (height - 2 * getInset()))
     }
 
     private fun getInset(): Double {

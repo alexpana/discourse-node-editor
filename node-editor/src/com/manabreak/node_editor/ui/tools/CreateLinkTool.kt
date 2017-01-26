@@ -1,14 +1,10 @@
 package com.manabreak.node_editor.ui.tools
 
 import com.manabreak.node_editor.model.Slot
-import com.manabreak.node_editor.model.Slot.Direction.INPUT
 import com.manabreak.node_editor.ui.NodeEditor
-import com.manabreak.node_editor.ui.Renderer.drawLink
 import com.manabreak.node_editor.ui.SlotComponent
-import java.awt.Graphics
-import java.awt.Graphics2D
-import java.awt.Point
-import java.awt.event.MouseEvent
+import javafx.geometry.Point2D
+import javafx.scene.input.MouseEvent
 
 class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
 
@@ -19,8 +15,8 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
     var hoveredComponent: SlotComponent? = null
 
     // Endpoints used for rendering the link
-    val fromLocation = Point()
-    val toLocation = Point()
+    val fromLocation = Point2D.ZERO
+    val toLocation = Point2D.ZERO
 
     override fun onMouseDown(event: MouseEvent) {
 //        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
@@ -44,13 +40,13 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
 //        }
     }
 
-    override fun paintUnderNodes(g: Graphics) {
-        if (from!!.direction == INPUT) {
-            drawLink(g as Graphics2D, toLocation, fromLocation)
-        } else {
-            drawLink(g, fromLocation, toLocation)
-        }
-    }
+//    override fun paintUnderNodes(g: Graphics) {
+//        if (from!!.direction == INPUT) {
+//            drawLink(g as Graphics2D, toLocation, fromLocation)
+//        } else {
+//            drawLink(g, fromLocation, toLocation)
+//        }
+//    }
 
     fun beginConnection(slot: Slot) {
 
@@ -76,7 +72,7 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
         stop()
     }
 
-    fun update(mouseLocation: Point) {
+    fun update(mouseLocation: Point2D) {
         if (!isConnecting) {
             return
         }

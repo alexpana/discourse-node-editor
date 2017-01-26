@@ -11,7 +11,7 @@ import javafx.scene.shape.CubicCurve
 
 class LinkComponent(val editor: NodeEditor, val link: Link) : Pane() {
 
-    val resizeListener = ResizeListener(this)
+    val resizeListener = BoundsListener(this)
 
     val backgroundCurve: CubicCurve = CubicCurve()
     val foregroundCurve: CubicCurve = CubicCurve()
@@ -28,14 +28,18 @@ class LinkComponent(val editor: NodeEditor, val link: Link) : Pane() {
         foregroundCurve.stroke = Theme.theme.linkColor
         foregroundCurve.fill = Color.TRANSPARENT
 
+        nodeFrom.layoutXProperty().addListener(resizeListener)
+        nodeFrom.layoutYProperty().addListener(resizeListener)
         nodeFrom.widthProperty().addListener(resizeListener)
         nodeFrom.heightProperty().addListener(resizeListener)
+        nodeTo.layoutXProperty().addListener(resizeListener)
+        nodeTo.layoutYProperty().addListener(resizeListener)
         nodeTo.widthProperty().addListener(resizeListener)
         nodeTo.heightProperty().addListener(resizeListener)
-        onNodeResize()
+        nodeBoundsChanged()
     }
 
-    private fun onNodeResize() {
+    private fun nodeBoundsChanged() {
         val fromPoint = if (link.from.direction == OUTPUT) editor.getSlotLocation(link.from) else editor.getSlotLocation(link.to)
         val toPoint = if (link.from.direction == OUTPUT) editor.getSlotLocation(link.to) else editor.getSlotLocation(link.from)
         updateCurveParams(backgroundCurve, fromPoint, toPoint)
@@ -56,9 +60,9 @@ class LinkComponent(val editor: NodeEditor, val link: Link) : Pane() {
         curve.endY = to.y
     }
 
-    class ResizeListener(val linkComponent: LinkComponent) : ChangeListener<Number> {
+    class BoundsListener(val linkComponent: LinkComponent) : ChangeListener<Number> {
         override fun changed(observable: ObservableValue<out Number>?, oldValue: Number?, newValue: Number?) {
-            linkComponent.onNodeResize()
+            linkComponent.nodeBoundsChanged()
         }
     }
 }

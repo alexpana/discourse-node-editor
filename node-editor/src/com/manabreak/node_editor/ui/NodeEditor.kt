@@ -7,15 +7,12 @@ import com.manabreak.node_editor.ui.tools.CreateLinkTool
 import com.manabreak.node_editor.ui.tools.DragNodeTool
 import com.manabreak.node_editor.ui.tools.MarqueeSelectionTool
 import com.manabreak.node_editor.ui.tools.Tool
+import javafx.event.EventHandler
 import javafx.geometry.Point2D
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Pane
-import java.awt.AWTEvent
-import java.awt.Event.*
 import java.awt.Graphics
-import java.awt.Point
 import java.awt.Rectangle
-import java.awt.event.AWTEventListener
-import java.awt.event.MouseEvent
 import java.util.*
 
 class NodeEditor : Pane(), LinkManager.Listener {
@@ -45,6 +42,11 @@ class NodeEditor : Pane(), LinkManager.Listener {
     val linkComponents = HashMap<Link, LinkComponent>()
 
     init {
+
+        onMousePressed = EventHandler<MouseEvent> { mouseDown(it) }
+        onMouseReleased = EventHandler<MouseEvent> { mouseUp(it) }
+        onMouseDragged = EventHandler<MouseEvent> { mouseDrag(it) }
+
         styleClass.add("editor")
         children.add(backgroundPane)
         linkManager.listeners.add(this)
@@ -78,7 +80,7 @@ class NodeEditor : Pane(), LinkManager.Listener {
         return nodeModelToComponent[slot.node]!!
     }
 
-    fun getNodeUIUnderCursor(cursor: Point): NodeUI<*>? {
+    fun getNodeUIUnderCursor(cursor: Point2D): NodeUI<*>? {
         return nodes.find { it.getHitbox().contains(cursor) }
     }
 
@@ -86,31 +88,31 @@ class NodeEditor : Pane(), LinkManager.Listener {
         activeTool?.paintOverNodes(g)
     }
 
-    private fun onMouseDown(event: MouseEvent) {
-//        val localPoint = screenToLocal(event.locationOnScreen, this)
-//        val componentUnderCursor = SwingUtils.getComponentAt(this, localPoint)
-//
-//        if (componentUnderCursor is SlotComponent) {
-//            activeTool = connectionHelper
-//        } else {
-//            val node = getNodeUIUnderCursor(localPoint)
-//            if (node != null) {
-//                if (event.modifiers and CTRL_MASK != 0) {
-//                    selection.add(node)
-//                } else {
-//                    if (!node.selected) {
-//                        selection.setSelection(node)
-//                    }
-//                }
+    private fun mouseDown(event: MouseEvent) {
+        val localPoint = Point2D(event.x, event.y)
+        val componentUnderCursor = event.target
+
+        if (componentUnderCursor is SlotComponent) {
+            activeTool = connectionHelper
+        } else {
+            val node = getNodeUIUnderCursor(localPoint)
+            if (node != null) {
+                if (event.isControlDown) {
+                    selection.add(node)
+                } else {
+                    if (!node.selected) {
+                        selection.setSelection(node)
+                    }
+                }
 //                if (isInputTransparent(componentUnderCursor)) {
-//                    activeTool = dragHelper
+                activeTool = dragHelper
 //                }
-//            } else {
-//                selection.clear(false)
-//                activeTool = marqueeSelection
-//                marqueeSelection.beginSelection(localPoint)
-//            }
-//        }
+            } else {
+                selection.clear(false)
+                activeTool = marqueeSelection
+                marqueeSelection.beginSelection(localPoint)
+            }
+        }
 
         activeTool?.onMouseDown(event)
         refresh()
@@ -128,16 +130,5 @@ class NodeEditor : Pane(), LinkManager.Listener {
     }
 
     fun refresh() {
-    }
-
-    private inner class MouseDragListener : AWTEventListener {
-        override fun eventDispatched(awtEvent: AWTEvent) {
-            val event = awtEvent as MouseEvent
-            when (event.id) {
-                MOUSE_DOWN -> onMouseDown(event)
-                MOUSE_UP -> mouseUp(event)
-                MOUSE_DRAG -> mouseDrag(event)
-            }
-        }
     }
 }

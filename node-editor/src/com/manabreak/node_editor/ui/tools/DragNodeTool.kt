@@ -1,57 +1,53 @@
 package com.manabreak.node_editor.ui.tools
 
 import com.manabreak.node_editor.ui.NodeEditor
-import java.awt.Point
-import java.awt.event.MouseEvent
+import javafx.geometry.Point2D
+import javafx.scene.input.MouseEvent
 
 class DragNodeTool(editor: NodeEditor) : Tool(editor) {
     var isDragging: Boolean = false
 
-    val deltaMove = Point()
+    var deltaMove = Point2D.ZERO
 
-    val totalDelta = Point()
+    var totalDelta = Point2D.ZERO
 
-    private val updateLocation = Point()
+    private var updateLocation = Point2D.ZERO
 
-    private val startLocation = Point()
+    private var startLocation = Point2D.ZERO
 
     override fun onMouseDown(event: MouseEvent) {
-//        val localPoint = SwingUtils.screenToLocal(event.locationOnScreen, editor)
-//        beginDrag(localPoint)
+        beginDrag(Point2D(event.x, event.y))
     }
 
     override fun onMouseDrag(event: MouseEvent) {
-//        updateDrag(SwingUtils.screenToLocal(event.locationOnScreen, editor))
+        updateDrag(Point2D(event.x, event.y))
     }
 
     override fun onMouseUp(event: MouseEvent) {
         endDrag()
     }
 
-    fun beginDrag(mouseLocation: Point) {
+    fun beginDrag(mouseLocation: Point2D) {
         isDragging = true
-        startLocation.location = mouseLocation
-        updateLocation.location = mouseLocation
+        startLocation = mouseLocation
+        updateLocation = mouseLocation
     }
 
     fun endDrag() {
         isDragging = false
-        deltaMove.setLocation(0, 0)
+        deltaMove = Point2D.ZERO
     }
 
-    fun updateDrag(mouseLocation: Point) {
+    fun updateDrag(mouseLocation: Point2D) {
         if (!isDragging) {
             return
         }
-        deltaMove.setLocation(mouseLocation.x - updateLocation.x, mouseLocation.y - updateLocation.y)
-        totalDelta.setLocation(mouseLocation.x - startLocation.x, mouseLocation.y - startLocation.y)
-        updateLocation.location = mouseLocation
+        deltaMove = Point2D(mouseLocation.x - updateLocation.x, mouseLocation.y - updateLocation.y)
+        totalDelta = Point2D(mouseLocation.x - startLocation.x, mouseLocation.y - startLocation.y)
+        updateLocation = mouseLocation
 
-        val temp = Point()
         for (selectedNode in editor.selection.selectedNodes) {
-//            selectedNode.getLocation(temp)
-//            temp.translate(deltaMove.x, deltaMove.y)
-//            selectedNode.location = temp
+            selectedNode.relocate(selectedNode.layoutX + deltaMove.x, selectedNode.layoutY + deltaMove.y)
         }
     }
 }
