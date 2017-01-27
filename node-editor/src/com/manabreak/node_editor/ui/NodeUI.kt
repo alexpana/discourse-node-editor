@@ -27,7 +27,7 @@ class NodeUI<out T : NodeContent> constructor(val content: T) : Pane() {
 
     val model = content.node
 
-    private val slotComponents = ArrayList<SlotComponent>()
+    val slotComponents = ArrayList<SlotComponent>()
 
     private val header = Header(content)
 
@@ -45,6 +45,10 @@ class NodeUI<out T : NodeContent> constructor(val content: T) : Pane() {
         }
 
         setPrefSize(this.content.prefWidth, this.content.prefHeight)
+    }
+
+    fun getSlots(): List<Slot> {
+        return content.slots
     }
 
     fun getSlot(index: Int): Slot {

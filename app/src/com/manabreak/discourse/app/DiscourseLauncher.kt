@@ -3,18 +3,19 @@ import com.manabreak.discourse.nodes.SequenceNode
 import com.manabreak.node_editor.ui.NodeEditor
 import com.manabreak.node_editor.ui.NodeUI
 import javafx.application.Application
+import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.text.Font
 import javafx.stage.Stage
 import java.awt.FontFormatException
 import java.io.IOException
-import javax.swing.SwingUtilities
 import javax.swing.UnsupportedLookAndFeelException
 
 object DiscourseLauncher {
 
     @Throws(UnsupportedLookAndFeelException::class, IOException::class, FontFormatException::class)
     @JvmStatic fun main(args: Array<String>) {
+
         Application.launch(DiscourseApplication::class.java, *args)
     }
 
@@ -39,7 +40,7 @@ object DiscourseLauncher {
             val nodeS = NodeUI(SequenceNode())
             nodeEditor.addNode(nodeS, 500.0, 200.0)
 
-            SwingUtilities.invokeLater {
+            Platform.runLater {
                 nodeEditor.linkManager.link(nodeA.content.firstOutput, nodeB.content.input)
                 nodeEditor.linkManager.link(nodeA.content.secondOutput, nodeC.content.input)
                 nodeEditor.refresh()

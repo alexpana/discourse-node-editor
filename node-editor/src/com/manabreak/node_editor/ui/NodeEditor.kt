@@ -59,10 +59,8 @@ class NodeEditor : Pane(), LinkManager.Listener {
         styleClass.add("editor")
         linkManager.listeners.add(this)
 
-        foregroundPane.translateZ = -10.0
         foregroundPane.children.add(foregroundCanvas)
 
-        backgroundPane.translateZ = 0.0
         children.add(backgroundPane)
         children.add(foregroundPane)
     }
@@ -81,7 +79,6 @@ class NodeEditor : Pane(), LinkManager.Listener {
     }
 
     fun addNode(nodeUI: NodeUI<*>, x: Double, y: Double) {
-        nodeUI.translateZ = 1.0
         children.add(1, nodeUI)
         nodes.add(nodeUI)
         nodeModelToComponent[nodeUI.model] = nodeUI
@@ -97,7 +94,16 @@ class NodeEditor : Pane(), LinkManager.Listener {
     }
 
     fun getNodeUIUnderCursor(cursor: Point2D): NodeUI<*>? {
-        return nodes.find { it.getHitbox().contains(cursor) }
+        return getNodeUIUnderCursor(cursor.x, cursor.y)
+    }
+
+    fun getNodeUIUnderCursor(x: Double, y: Double): NodeUI<*>? {
+        return nodes.find { it.getHitbox().contains(x, y) }
+    }
+
+    fun getSlotUnderCursor(x: Double, y: Double): SlotComponent? {
+        val node = getNodeUIUnderCursor(x, y)
+        return node?.slotComponents?.find { x - getSlotLocation(it.slot).x < it.width && y - getSlotLocation(it.slot).y < it.height }
     }
 
     private fun mouseDown(event: MouseEvent) {

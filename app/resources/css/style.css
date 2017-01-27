@@ -28,7 +28,18 @@
 }
 
 .slot {
-    -fx-background-color: #333637, #5b5e62;
     -fx-background-insets: 0, 2;
     -fx-background-radius: 7;
+}
+
+.slot.normal {
+    -fx-background-color: #333637, #5b5e62;
+}
+
+.slot.accept {
+    -fx-background-color: #333637, #557EA4;
+}
+
+.slot.decline {
+    -fx-background-color: #333637, #A4555A;
 }

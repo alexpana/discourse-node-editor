@@ -77,9 +77,11 @@ class CreateLinkTool(editor: NodeEditor) : Tool(editor = editor) {
             hoveredComponent = null
         }
 
-        if (target is SlotComponent && target !== hoveredComponent && target.slot != from) {
-            hoveredComponent = target
-            hoveredComponent?.state = if (editor.linkManager.canLink(from!!, target.slot)) SlotComponent.State.ACCEPT else SlotComponent.State.DECLINE
+        val slot = editor.getSlotUnderCursor(x, y)
+
+        if (slot != null && target !== hoveredComponent && slot.slot != from) {
+            hoveredComponent = slot
+            hoveredComponent?.state = if (editor.linkManager.canLink(from!!, slot.slot)) SlotComponent.State.ACCEPT else SlotComponent.State.DECLINE
         }
 
         toLocation = Point2D(x, y)
